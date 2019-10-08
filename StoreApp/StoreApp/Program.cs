@@ -1,4 +1,5 @@
 ﻿using System;
+using StoreApp.Library;
 
 namespace StoreApp
 {

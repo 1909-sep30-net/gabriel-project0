@@ -6,7 +6,10 @@ namespace StoreApp.Library
 {
     public class OrderLog
     {
-        private List<Order> orders;
+        private ICollection<Tuple<Order, DateTime>> orders;
+
+        // Time that the order is placed
+        public DateTime orderTime { get; set; }
 
 
         /// <summary>
@@ -15,7 +18,9 @@ namespace StoreApp.Library
         /// <param name="order">Ahhh</param>
         public void Add(Order order)
         {
-            orders.Add(order);
+            DateTime time = DateTime.Now;
+            var addToLog = new Tuple<Order, DateTime>(order, time);
+            orders.Add(addToLog);
 
         }
 
