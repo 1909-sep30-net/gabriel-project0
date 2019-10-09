@@ -11,6 +11,7 @@ namespace StoreApp.Library
         /// </summary>
         public int Id { get; set; }
 
+        // Backing field for Name property
         private string _name;
 
         /// <summary>
@@ -39,15 +40,21 @@ namespace StoreApp.Library
             }
         }
        
-        
-        /// <summary>
-        /// History of orders for this location
-        /// </summary>
-        public OrderLog log { get; set; }
 
         /// <summary>
-        /// List of items and quantity of how much this location currently stores
+        /// Holds the history of customer's orders
         /// </summary>
-        public List<Tuple<Product, int>> inventory { get; set; } = new List<Tuple<Product, int>>();
+        /// <remarks>
+        /// Instantiate class with an empty log list
+        /// </remarks>
+        public List<Order> OrderLog { get; set; } = new List<Order>();
+
+        /// <summary>
+        /// List of items and their quantity available at this particular location
+        /// </summary>
+        /// <remarks>
+        /// Instantiate class with an empty inventory list
+        /// </remarks>
+        public List<Tuple<Product, int>> Inventory { get; set; } = new List<Tuple<Product, int>>();
     }
 }

@@ -4,22 +4,26 @@ using System.Text;
 
 namespace StoreApp.Library
 {
+
     public class Customer
     {
+        private string _firstName;
+        private string _lastName;
+
+        /// <summary>
+        /// Constructor for instantiating Customer with first and last name
+        /// </summary>
+        /// <param name="first">First name</param>
+        /// <param name="last">Last name</param>
         public Customer(string first, string last)
         {
-            if (first.Length > 0)
-            {
-                _firstName = first;
-            }
-            
+            _firstName = first;
             _lastName = last;
         }
 
-        private string _firstName;
-        private string _lastName;
-        private int _id;
- 
+        /// <summary>
+        /// Id used to uniquely identify customer in database
+        /// </summary>
         public int Id { get; set; }
 
         /// <summary>
@@ -32,30 +36,39 @@ namespace StoreApp.Library
                 return _firstName + " " + _lastName;
             }
 
-        }
-
-        public void UpdateName(string first, string last)
-        {
-
-            if (first == null)
+            set 
             {
-                throw new ArgumentNullException("Name should not be null.", nameof(first));
+                // Split input into strings separated by spaces. If valid input, then firstLastNames should hold two strings (first and last name)
+                string[] firstLastNames = value.Split(' ');
+                if (firstLastNames.Length != 2)
+                {
+                    throw new ArgumentException("Name should two words", nameof(value));
+                }
+
+                // Check if either string in firstLastNames is an empty string
+                // Split(' ') can return a string[] with an empty string value if given something like "hi "
+                foreach (string item in firstLastNames)
+                {
+                    if (item == "")
+                    {
+                        throw new ArgumentException("Name should be two words separated by a space", nameof(value));
+                    }
+                }
+
+                // If no exceptions have been thrown at this point, should be safe to assign
+                _firstName = firstLastNames[0];
+                _lastName = firstLastNames[1];
             }
-            else if (first.Length <= 0)
-            {
-                throw new ArgumentException("Name must be non-empty string.", nameof(first));
-            }
-            else
-            {
-                _firstName = first;
-            }
-        }
+        
+    }
 
 
-         /// <summary>
-         /// 
-         /// </summary>
-        public OrderLog Log { get; set; }
+
+
+        /// <summary>
+        /// Holds the history of customer's orders
+        /// </summary>
+        public List<Order> OrderLog { get; set; } = new List<Order>();
 
 
     }

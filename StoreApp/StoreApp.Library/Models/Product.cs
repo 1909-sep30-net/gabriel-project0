@@ -6,9 +6,100 @@ namespace StoreApp.Library
 {
     public class Product
     {
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-        public string Size { get; set; }
-        public string Color { get; set; }
+
+
+        private string _name;
+
+        private decimal _price;
+
+        private string _size;
+
+        private string _color;
+
+        /// <summary>
+        /// Name of the soap product
+        /// </summary>
+        public string Name 
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("Name should not be null.", nameof(value));
+                }
+                else if (value.Length <= 0)
+                {
+                    throw new ArgumentException("Name must be non-empty string.", nameof(value));
+                }
+                else
+                {
+                    _name = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Price of the soap product
+        /// </summary>
+        public decimal Price
+        {
+            get
+            {
+                return _price;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentException("Price must be non-zero, non-negative value", nameof(value));
+                }
+                _price = value;
+            }
+        }
+        /// <summary>
+        /// Size of the soap product
+        /// </summary>
+        public string Size
+        {
+            get
+            {
+                return _size;
+            }
+            set
+            {
+                // Must set size to valid size name
+                if (value != "smolboy" && value != "midkid" && value != "madman")
+                {
+                    throw new ArgumentException("Size must be smolboy, midkid, or madman.", nameof(value));
+                }
+
+                _size = value;
+            }
+        }
+
+        /// <summary>
+        /// Color of the soap product
+        /// </summary>
+        public string Color 
+        { 
+            get
+            {
+                return _color;
+            }
+            set
+            {
+                // Must set color to black, white or green.
+                if (value != "black" && value != "white" && value != "green")
+                {
+                    throw new ArgumentException("Color must be black, white, or green.", nameof(value));
+                }
+
+                _color = value;
+            }
+        }
     }
 }
