@@ -46,7 +46,7 @@ namespace StoreApp.Library
             
             // TODO:
             // Order is invalid if MyCustomer or MyLocation is invalid
-            if (!MyCustomer.isValid() || !MyLocation.isValid())
+            if (!MyCustomer.IsValid() || !MyLocation.IsValid())
             {
                 return false;
             }

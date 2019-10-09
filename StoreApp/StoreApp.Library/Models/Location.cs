@@ -57,14 +57,6 @@ namespace StoreApp.Library
         /// </remarks>
         public List<Tuple<Product, int>> Inventory { get; set; } = new List<Tuple<Product, int>>();
 
-        /// <summary>
-        /// Verifies if this location instance is valid
-        /// </summary>
-        /// <returns></returns>
-        public bool isValid()
-        {
 
-            return true;
-        }
     }
 }
