@@ -8,7 +8,7 @@ namespace StoreApp.Test
 {
     public class CustomerTest
     {
-        readonly Customer customer = new Customer("Billy","Bobman");
+        readonly Customer customer = new Customer();
 
         [Fact]
         public void Name_EmptyValue_ThrowsException()
