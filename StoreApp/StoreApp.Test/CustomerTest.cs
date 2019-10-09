@@ -47,6 +47,13 @@ namespace StoreApp.Test
             customer.Name = newName;
             Assert.Equal(customer.Name, newName);
         }
+
+        [Fact]
+        public void IsValid_NotSetName_False()
+        {
+            customer.Name = "Something";
+            Assert.False(customer.IsValid());
+        }
     }
 
 }
