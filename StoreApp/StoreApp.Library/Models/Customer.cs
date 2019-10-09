@@ -15,11 +15,11 @@ namespace StoreApp.Library
         /// </summary>
         /// <param name="first">First name</param>
         /// <param name="last">Last name</param>
-        public Customer(string first, string last)
-        {
-            _firstName = first;
-            _lastName = last;
-        }
+        //public Customer(string first, string last)
+        //{
+        //    _firstName = first;
+        //    _lastName = last;
+        //}
 
         /// <summary>
         /// Id used to uniquely identify customer in database
@@ -67,7 +67,14 @@ namespace StoreApp.Library
         /// </summary>
         public List<Order> OrderLog { get; set; } = new List<Order>();
 
-
+        public bool isValid()
+        {
+            if (_firstName == null || _lastName == null)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 
 }

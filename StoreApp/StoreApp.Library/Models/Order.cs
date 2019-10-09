@@ -43,6 +43,13 @@ namespace StoreApp.Library
             {
                 return false;
             }
+            
+            // TODO:
+            // Order is invalid if MyCustomer or MyLocation is invalid
+            if (!MyCustomer.isValid() || !MyLocation.isValid())
+            {
+                return false;
+            }
 
             // If any item in ProductList has a quantity <= 0, order is invalid
             foreach (Tuple<Product,int> item in ProductList)

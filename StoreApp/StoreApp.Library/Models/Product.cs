@@ -6,7 +6,13 @@ namespace StoreApp.Library
 {
     public class Product
     {
-
+        public Product()
+        {
+            _name = "Default Soap";
+            _price = 1.00M;
+            _size = "smolboy";
+            _color = "black";
+        }
 
         private string _name;
 
