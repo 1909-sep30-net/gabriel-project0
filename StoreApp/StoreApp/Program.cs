@@ -7,8 +7,11 @@ namespace StoreApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Welcome to the Dope Soap store interface! \n");
 
+            Console.WriteLine("Welcome to the Dope Soap store interface! \n");
+            string x = " ";
+            string[] check = x.Split(' ');
+            Console.WriteLine(check[1] == "");
             Console.WriteLine("What would you like to do?\n");
 
             Console.WriteLine("P - Place an Order");
