@@ -38,6 +38,10 @@ namespace StoreApp.Library
 
             set 
             {
+                if ( value == null )
+                {
+                    throw new ArgumentNullException("Name should not be null", nameof(value));
+                }
                 // Split input into strings separated by spaces. If valid input, then firstLastNames should hold two strings (first and last name)
                 string[] firstLastNames = value.Split(' ');
                 if (firstLastNames.Length != 2)
