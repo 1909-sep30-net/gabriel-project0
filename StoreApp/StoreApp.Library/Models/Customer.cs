@@ -62,9 +62,6 @@ namespace StoreApp.Library
         
     }
 
-
-
-
         /// <summary>
         /// Holds the history of customer's orders
         /// </summary>
