@@ -6,13 +6,8 @@ namespace StoreApp.Library
 {
     public class Product
     {
-        public Product()
-        {
-            _name = "Default Soap";
-            _price = 1.00M;
-            _size = "smolboy";
-            _color = "black";
-        }
+
+        /* Private backing fields for properties */
 
         private string _name;
 
@@ -21,6 +16,22 @@ namespace StoreApp.Library
         private string _size;
 
         private string _color;
+
+        private int _quantity;
+
+        /* ------------------------------------- */
+
+        /// <summary>
+        /// Initialize all important values by default with default item properties
+        /// </summary>
+        public Product()
+        {
+            _name = "Default Soap";
+            _price = 1.00M;
+            _size = "smolboy";
+            _color = "black";
+        }
+
 
         /// <summary>
         /// Name of the soap product
@@ -105,6 +116,27 @@ namespace StoreApp.Library
                 }
 
                 _color = value;
+            }
+        }
+
+        /// <summary>
+        /// Amount of product currently stored
+        /// </summary>
+        public int Quantity
+        {
+            get
+            {
+                return _quantity;
+            }
+
+            // Can only set to non negative numbers
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentException("Quantity cannot be set to less than zero.", nameof(value));
+                }
+
             }
         }
     }
