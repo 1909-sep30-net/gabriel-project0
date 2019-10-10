@@ -51,8 +51,8 @@ namespace StoreApp.Test
         [Fact]
         public void IsValid_NotSetName_False()
         {
-            customer.Name = "Something";
-            Assert.False(customer.IsValid());
+            string newName = "Billy";
+            Assert.Throws<ArgumentException>(() => customer.Name = newName);
         }
     }
 

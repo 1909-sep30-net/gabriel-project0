@@ -19,51 +19,13 @@ namespace StoreApp.Library
         /// <summary>
         /// List of products and their quantity to be ordered
         /// </summary>
-        public List<Tuple<Product, int>> ProductList { get; set; } = new List<Tuple<Product, int>>();
+        public List<Product> ProductList { get; set; } = new List<Product>();
 
         /// <summary>
-        /// Returns whether or not this order is valid and can be submitted
+        /// Time that the order was sent
         /// </summary>
-        /// 
-        /// <remarks>
-        /// Checks:
-        ///     - if ProductList size is at least >= 1
-        ///     - if every item in ProductList has a corresponding quantity greater than 0
-        ///     - if MyCustomer is set
-        ///     - if MyLocation is set
-        /// </remarks>
-        /// 
-        /// <returns>
-        /// Returns true if a valid order, false if not.
-        /// </returns>
-        public bool IsValidOrder()
-        {
-            // Order is invalid if productlist is empty, or there is no set customer, location,
-            if (ProductList.Count < 1 || MyCustomer == null || MyLocation == null)
-            {
-                return false;
-            }
-            
-            // TODO:
-            // Order is invalid if MyCustomer or MyLocation is invalid
-            if (!MyCustomer.IsValid() || !MyLocation.IsValid())
-            {
-                return false;
-            }
-
-            // If any item in ProductList has a quantity <= 0, order is invalid
-            foreach (Tuple<Product,int> item in ProductList)
-            {
-                if (item.Item2 < 1)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-
-        }
-
+        /// <return>Null if order has not been sent yet</return>
+        public DateTime MyTime { get; set; }
 
     }
 }

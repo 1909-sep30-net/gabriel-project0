@@ -11,17 +11,6 @@ namespace StoreApp.Library
         private string _lastName;
 
         /// <summary>
-        /// Constructor for instantiating Customer with first and last name
-        /// </summary>
-        /// <param name="first">First name</param>
-        /// <param name="last">Last name</param>
-        //public Customer(string first, string last)
-        //{
-        //    _firstName = first;
-        //    _lastName = last;
-        //}
-
-        /// <summary>
         /// Id used to uniquely identify customer in database
         /// </summary>
         public int Id { get; set; }
@@ -71,18 +60,7 @@ namespace StoreApp.Library
         /// </summary>
         public List<Order> OrderLog { get; } = new List<Order>();
 
-        /// <summary>
-        /// Checks if this customer is a valid customer
-        /// </summary>
-        /// <returns></returns>
-        public bool IsValid()
-        {
-            if (_firstName == null || _lastName == null)
-            {
-                return false;
-            }
-            return true;
-        }
+
     }
 
 }

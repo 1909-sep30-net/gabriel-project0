@@ -1,4 +1,5 @@
 ﻿using StoreApp.Library;
+using StoreApp.Library.Managers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,7 +22,8 @@ namespace StoreApp.Test
             order.MyCustomer = validCustomer;
             order.MyLocation = validLocation;
 
-            Assert.False(order.IsValidOrder());
+            //Assert.False(order.IsValidOrder());
+            Assert.False(OrderManager.IsValidOrder(order));
         }
 
         [Fact]
@@ -31,6 +33,7 @@ namespace StoreApp.Test
             order.MyCustomer = validCustomer;
             order.MyLocation = validLocation;
             order.ProductList.Add(new Tuple<Product, int>(product, 0));
+
 
             Assert.False(order.IsValidOrder());
 
