@@ -129,14 +129,15 @@ namespace StoreApp.Library
                 return _quantity;
             }
 
-            // Can only set to non negative numbers
+            
             set
             {
-                if (value < 0)
+                // Can only set to positive numbers
+                if (value <= 0)
                 {
-                    throw new ArgumentException("Quantity cannot be set to less than zero.", nameof(value));
+                    throw new ArgumentException("Quantity cannot be set to or less than zero.", nameof(value));
                 }
-
+                _quantity = value;
             }
         }
     }

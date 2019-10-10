@@ -14,7 +14,7 @@ namespace StoreApp.Library.Managers
         /// - Name must be non-null, non-empty string
         /// </remarks>
         /// <returns></returns>
-        public static bool IsValid(Location location)
+        public static bool IsValidLocation(Location location)
         {
             if (location.Inventory.Count < 1 )
             {

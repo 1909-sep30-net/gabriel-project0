@@ -12,7 +12,7 @@ namespace StoreApp.Library.Managers
         /// <param name="order"></param>
         /// <param name="quantity"></param>
         public static void AddProduct(Order order, Product product, int quantity)
-        {
+        {           
             if (quantity < 1)
             {
                 throw new ArgumentException("Quantity added should be 1 or more.", nameof(quantity));
@@ -25,7 +25,50 @@ namespace StoreApp.Library.Managers
             // If product is already in order's list, just increment that particular product's quantity
             if (ProductListContains(product.Name,order.ProductList))
             {
+                GetProduct(product.Name, order.ProductList).Quantity += quantity;
+            }
+            // If product isn't already in order's list, add new product item to that order's list
+            else
+            {
+                product.Quantity = quantity;
+                order.ProductList.Add(product);
+            }
+        }
 
+        public static void RemoveProduct(Order order, Product product, int quantity)
+        {
+            // Check for valid quantity and order
+            if (quantity < 1)
+            {
+                throw new ArgumentException("Quantity removed should be 1 or more.", nameof(quantity));
+            }
+            if (order == null)
+            {
+                throw new ArgumentNullException("Order cannot be null.", nameof(order));
+            }
+
+            // If product is not already in order's list, don't do anything (but also display some sort of message?)
+            if (!ProductListContains(product.Name, order.ProductList))
+            {
+                Console.WriteLine("Nothing removed, product does not exist in this order.");
+            }
+            else
+            {
+                // Grab the product from the order productlist
+                Product productInOrder = GetProduct(product.Name, order.ProductList);
+
+                // If the quantity being removed completely depletes product's quantity, just remove it from list
+                if (productInOrder.Quantity - quantity <= 0)
+                {
+                    order.ProductList.Remove(productInOrder);
+                }
+
+                // Otherwise, just subtract form product's quantity
+                else
+                {
+                    productInOrder.Quantity -= quantity;
+                }
+                
             }
         }
 
@@ -53,7 +96,7 @@ namespace StoreApp.Library.Managers
                 return false;
             }
 
-            if (!LocationManager.IsValid(order.MyLocation))
+            if (!LocationManager.IsValidLocation(order.MyLocation))
             {
                 return false;
             }
@@ -82,6 +125,12 @@ namespace StoreApp.Library.Managers
         /// <returns>True if product list is valid, false if not</returns>
         public static bool IsValidProductList(List<Product> pl)
         {
+            // List is valid if size larger than 0
+            if (pl.Count < 1)
+            {
+                return false;
+            }
+
             // If any item in ProductList has a quantity <= 0, order is invalid
             foreach (Product item in pl)
             {
@@ -90,7 +139,7 @@ namespace StoreApp.Library.Managers
                     return false;
                 }
             }
-
+            
             return true;
 
         }

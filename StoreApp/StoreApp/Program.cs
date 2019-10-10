@@ -68,10 +68,11 @@ namespace StoreApp
 
                         while (!IsValidCustomerSelectionByName(input))
                         {
-                            Console.WriteLine("Input was not valid. \nPlease enter the name of a customer.");
+                            Console.WriteLine("Input was not valid. Please enter the name of a customer.\n");
                             Console.WriteLine();
                             Console.Write("Customer name: ");
                             input = Console.ReadLine();
+                            Console.WriteLine();
                         }
 
                         // Add customer to order
