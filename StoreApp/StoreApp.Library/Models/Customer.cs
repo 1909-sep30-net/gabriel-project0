@@ -10,18 +10,67 @@ namespace StoreApp.Library
         private string _firstName;
         private string _lastName;
 
-        public Customer (string name)
-        {
-            Name = name;
-        }
-
         /// <summary>
         /// Id used to uniquely identify customer in database
         /// </summary>
-        public int Id { get; set; }
+        public int CustomerId { get; set; }
 
         /// <summary>
-        /// Property that returns the first and last name of the customer.
+        /// Handles getting and setting first name
+        /// </summary>
+        public string FirstName
+        {
+            get
+            {
+                return _firstName;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("Name cannot be null", nameof(value));
+                }
+                if (value.Length < 1)
+                {
+                    throw new ArgumentException("Name must be at least one letter", nameof(value));
+                }
+
+                // Always capitalize first letter and lowercase the rest
+                string newName = value[0].ToString().ToUpper() + value.Substring(1).ToLower();
+                _lastName = newName;
+            }
+        }
+
+        /// <summary>
+        /// Handles getting and setting last name
+        /// </summary>
+        public string LastName
+        {
+            get
+            {
+                return _lastName;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("Name cannot be null", nameof(value));
+                }
+                if (value.Length < 1)
+                {
+                    throw new ArgumentException("Name must be at least one letter", nameof(value));
+                }
+
+                // Always capitalize first letter and lowercase the rest
+                string newName = value[0].ToString().ToUpper() + value.Substring(1).ToLower();
+                _lastName = newName;
+            }
+        }
+
+        /// <summary>
+        /// Shorthand way of setting and getting the full name of the customer
         /// </summary>
         public string Name
         {
@@ -30,35 +79,19 @@ namespace StoreApp.Library
                 return _firstName + " " + _lastName;
             }
 
-            set 
+            set
             {
-                if ( value == null )
-                {
-                    throw new ArgumentNullException("Name should not be null", nameof(value));
-                }
-                // Split input into strings separated by spaces. If valid input, then firstLastNames should hold two strings (first and last name)
                 string[] firstLastNames = value.Split(' ');
+
                 if (firstLastNames.Length != 2)
                 {
                     throw new ArgumentException("Name should two words", nameof(value));
                 }
 
-                // Check if either string in firstLastNames is an empty string
-                // Split(' ') can return a string[] with an empty string value if given something like "hi "
-                foreach (string item in firstLastNames)
-                {
-                    if (item == "")
-                    {
-                        throw new ArgumentException("Name should be two words separated by a space", nameof(value));
-                    }
-                }
-
-                // If no exceptions have been thrown at this point, should be safe to assign
-                _firstName = firstLastNames[0];
-                _lastName = firstLastNames[1];
+                FirstName = firstLastNames[0];
+                LastName = firstLastNames[1];
             }
-        
-    }
+        }
 
         /// <summary>
         /// Holds the history of customer's orders
