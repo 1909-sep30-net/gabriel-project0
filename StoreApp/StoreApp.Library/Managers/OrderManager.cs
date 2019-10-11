@@ -21,7 +21,7 @@ namespace StoreApp.Library.Managers
             {
                 throw new ArgumentNullException("Order cannot be null.", nameof(order));
             }
-            
+            /*
             // If product is already in order's list, just increment that particular product's quantity
             if (ProductListContains(product.Name,order.ProductList))
             {
@@ -33,7 +33,9 @@ namespace StoreApp.Library.Managers
                 product.Quantity = quantity;
                 order.ProductList.Add(product);
             }
+            */
         }
+
 
         public static void RemoveProduct(Order order, Product product, int quantity)
         {
@@ -57,6 +59,7 @@ namespace StoreApp.Library.Managers
                 // Grab the product from the order productlist
                 Product productInOrder = GetProduct(product.Name, order.ProductList);
 
+                /*
                 // If the quantity being removed completely depletes product's quantity, just remove it from list
                 if (productInOrder.Quantity - quantity <= 0)
                 {
@@ -68,6 +71,7 @@ namespace StoreApp.Library.Managers
                 {
                     productInOrder.Quantity -= quantity;
                 }
+                */
                 
             }
         }
@@ -130,7 +134,7 @@ namespace StoreApp.Library.Managers
             {
                 return false;
             }
-
+            /*
             // If any item in ProductList has a quantity <= 0, order is invalid
             foreach (Product item in pl)
             {
@@ -139,6 +143,7 @@ namespace StoreApp.Library.Managers
                     return false;
                 }
             }
+            */
             
             return true;
 

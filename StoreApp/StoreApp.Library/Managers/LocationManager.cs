@@ -29,7 +29,7 @@ namespace StoreApp.Library.Managers
             return true;
         }
 
-        public static void AddToInventory(ref Location location, Product product)
+        public static void AddToInventory(Location location, Product product, int quantity)
         {
             // location.Inventory()
         }
