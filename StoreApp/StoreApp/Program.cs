@@ -13,18 +13,24 @@ namespace StoreApp
         {
             // Instantiate list of available customers in place of DB
             customers = new List<Customer>();
+            customers.Add(new Customer("Nilly Nob"));
+            customers.Add(new Customer("Pan Ko"));
+
 
             // Instantiate list of available locations in place of DB
             locations = new List<Location>();
+            locations.Add(new Location(1, "Aplenty"));
+            locations.Add(new Location(2, "Hope"));
+
 
 
             /* Start printing to console to guide user */
 
-            Console.WriteLine("Welcome to the Doap Soap store interface! \n");
 
             // Going to keep this while loop condition true since that's all the application does, for now
             while (true)
             {
+                Console.WriteLine("Welcome to the Doap Soap Store application! \n");
 
                 Console.WriteLine("What would you like to do?\n");
 
@@ -33,26 +39,37 @@ namespace StoreApp
                 Console.WriteLine("C - Examine Customer");
                 Console.WriteLine("S - Examine Store Location\n");
 
-                Console.WriteLine("Please enter a letter to choose an action: ");
+                Console.Write("Please enter a letter to choose an action: ");
 
                 // Read input from the user. Keep asking for input until input is valid.
                 string input = Console.ReadLine();
                 char output;
                 while (!IsValidActionInput(1, input, out output))
                 {
-                    Console.WriteLine("Input was not valid. \nPlease enter one of the following: 'P', 'A', 'C', 'S'");
+                    Console.WriteLine("\nInput was not valid. \nPlease enter one of the following: 'P', 'A', 'C', 'S'\n");
+
+                    Console.WriteLine("What would you like to do?\n");
+
+                    Console.WriteLine("P - Place an Order");
+                    Console.WriteLine("A - Add New Customer");
+                    Console.WriteLine("C - Examine Customer");
+                    Console.WriteLine("S - Examine Store Location\n");
+
+                    Console.Write("Please enter a letter to choose an action: ");
+
                     input = Console.ReadLine();
                 }
 
                 // Once user has entered valid input, continue to the action specified
                 switch (output)
                 {
+                    // Place an order
                     case 'p':
 
                         Order order = new Order();
 
                         // Who's the Customer?
-                        Console.WriteLine("Which customer is creating the order?");
+                        Console.WriteLine("\nSelect the customer for this order: \n");
 
                         // Display list of customers in the database
                         foreach (Customer c in customers)
@@ -112,12 +129,24 @@ namespace StoreApp
                         {
 
                             // What's the order?
-                            Console.WriteLine("Do you want to [A]dd products, [R]emove products, [C]onfirm, or Ca[n]cel your order?");
+                            Console.WriteLine("What would you like to do to your order?\n");
+                            Console.WriteLine("A - Add Products");
+                            Console.WriteLine("R - Remove Products");
+                            Console.WriteLine("C - Confirm Order");
+                            Console.WriteLine("N - Cancel Order\n");
                             input = Console.ReadLine();
 
                             while (!IsValidActionInput(2, input, out output))
                             {
-                                Console.WriteLine("Input was not valid. \nPlease enter one of the following: 'A', 'R', 'C', 'N'");
+                                Console.WriteLine("\nInput was not valid. \n " +
+                                                  "Please enter one of the following: 'A', 'R', 'C', 'N' \n");
+
+                                // What's the order?
+                                Console.WriteLine("\nWhat would you like to do to your order?\n");
+                                Console.WriteLine("A - Add Products");
+                                Console.WriteLine("R - Remove Products");
+                                Console.WriteLine("C - Confirm Order");
+                                Console.WriteLine("N - Cancel Order\n");
                                 input = Console.ReadLine();
                             }
 
@@ -125,33 +154,102 @@ namespace StoreApp
                             {
                                 // Add a product and quantity to order
                                 case 'a':
+
+                                    /* ~TODO~ Fill out these comments */
+
+                                    // Display products available to be added
+                                    // DisplayProducts()
+
+                                    // Select product (by ID?) to be added
+                                    // SelectProduct(int ID)
+
+                                    // Specify quantity to add
+                                    // Handle possible quantity errors (quantity can't be negative or ridiculously high)
+
+                                    // Add selected product to order with quantity
+
+                                    Console.WriteLine("Product added!");
                                     break;
 
                                 // Remove a product from the order
                                 case 'r':
+
+                                    // Display order's list items
+
+                                    // Select list item id
+
+                                    // Specify quantity to remove
+                                    // Handle possible quantity errors (quantity can't be negative or bring current quantity below 0)
+
+                                    // Remove quantity of product from that list item 
+
+                                    Console.WriteLine("Product removed!");
                                     break;
 
                                 // Confirm the order
                                 case 'c':
+
+                                    // Check if order is valid
+
+                                    // If valid, assign order datetime
+
+                                    // Populate Order table
+
+                                    // Go back to main menu
+                                    orderDone = true;
                                     break;
 
                                 // Cancel the order
                                 case 'n':
+
+                                    // Exits the loop
                                     orderDone = true;
                                     break;
 
                             }
-                        }
+                        } // END OF Place Order loop
 
                         break;
 
+                    // Add a customer
                     case 'a':
+
+                        /* TODO: Fix all this lazy input handling */
+
+                        Console.WriteLine("Enter customer name:");
+                        // Enter info for a customer -- their name
+                        input = Console.ReadLine();
+
+                        // Add customer to database
+                        customers.Add(new Customer(input));
+
+                        Console.WriteLine("Customer added!");
+                        
                         break;
 
+                    // Examine Customer
                     case 'c':
+                        // Display all available customers
+
+                        // Select customer based on ID
+
+                        // Display all customer info
+
+                            // Examine Order Log
+                            // Cancel
+
                         break;
 
+                    // Examine Store Location
                     case 's':
+                        // Display all available locations
+
+                        // Select location based on ID
+
+                        // Display all location info
+
+                            // Examine Order Log
+                            // Cancel
                         break;
 
                 }
