@@ -6,6 +6,11 @@ namespace StoreApp.Library
 {
     public class Location
     {
+        public Location(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
         /// <summary>
         /// Unique identifier to be used for database organization
         /// </summary>

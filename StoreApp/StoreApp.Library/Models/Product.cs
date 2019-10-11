@@ -9,6 +9,7 @@ namespace StoreApp.Library
 
         /* Private backing fields for properties */
 
+
         private string _name;
 
         private decimal _price;
@@ -16,8 +17,6 @@ namespace StoreApp.Library
         private string _size;
 
         private string _color;
-
-        private int _quantity;
 
         /* ------------------------------------- */
 
@@ -32,6 +31,14 @@ namespace StoreApp.Library
             _color = "black";
         }
 
+        /// <summary>
+        /// Unique ID for every product type
+        /// </summary>
+        /// <remarks> 
+        /// Products with same names can have different sizes, colors, etc, 
+        /// so need to have another value for unique identity. 
+        /// </remarks>
+        public int ID { get; set; }
 
         /// <summary>
         /// Name of the soap product
@@ -74,6 +81,7 @@ namespace StoreApp.Library
                 {
                     throw new ArgumentException("Price must be non-zero, non-negative value", nameof(value));
                 }
+
                 _price = value;
             }
         }
@@ -88,10 +96,11 @@ namespace StoreApp.Library
             }
             set
             {
+                value = value.ToLower();
                 // Must set size to valid size name
                 if (value != "smolboy" && value != "midkid" && value != "madman")
                 {
-                    throw new ArgumentException("Size must be smolboy, midkid, or madman.", nameof(value));
+                    throw new ArgumentException("Size must be Smolboy, Midkid, or Madman.", nameof(value));
                 }
 
                 _size = value;
@@ -119,26 +128,5 @@ namespace StoreApp.Library
             }
         }
 
-        /// <summary>
-        /// Amount of product currently stored
-        /// </summary>
-        public int Quantity
-        {
-            get
-            {
-                return _quantity;
-            }
-
-            
-            set
-            {
-                // Can only set to positive numbers
-                if (value <= 0)
-                {
-                    throw new ArgumentException("Quantity cannot be set to or less than zero.", nameof(value));
-                }
-                _quantity = value;
-            }
-        }
     }
 }

@@ -10,6 +10,11 @@ namespace StoreApp.Library
         private string _firstName;
         private string _lastName;
 
+        public Customer (string name)
+        {
+            Name = name;
+        }
+
         /// <summary>
         /// Id used to uniquely identify customer in database
         /// </summary>
