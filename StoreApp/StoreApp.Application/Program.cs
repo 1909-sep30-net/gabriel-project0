@@ -9,6 +9,11 @@ namespace StoreApp.Application
 {
     public class Program
     {
+        enum Menus : int
+        {
+            Main,
+            Order,
+        };
 
         public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
@@ -31,35 +36,21 @@ namespace StoreApp.Application
             {
                 Console.WriteLine("Welcome to the Doap Soap Store application! \n");
 
-                Console.WriteLine("What would you like to do?\n");
-
-                Console.WriteLine("P - Place an Order");
-                Console.WriteLine("A - Add New Customer");
-                Console.WriteLine("C - Examine Customer");
-                Console.WriteLine("S - Examine Store Location\n");
-
-                Console.Write("Please enter a letter to choose an action: ");
+                DisplayMainMenu();
 
                 // Read input from the user. Keep asking for input until input is valid.
                 string input = Console.ReadLine();
                 char output = 'p';
-                /*
-                while (!IsValidActionInput(1, input, out output))
+                
+                while (!InputParser.IsValidActionInput((int)Menus.Main, input, out output))
                 {
                     Console.WriteLine("\nInput was not valid. \nPlease enter one of the following: 'P', 'A', 'C', 'S'\n");
 
-                    Console.WriteLine("What would you like to do?\n");
-
-                    Console.WriteLine("P - Place an Order");
-                    Console.WriteLine("A - Add New Customer");
-                    Console.WriteLine("C - Examine Customer");
-                    Console.WriteLine("S - Examine Store Location\n");
-
-                    Console.Write("Please enter a letter to choose an action: ");
+                    DisplayMainMenu();
 
                     input = Console.ReadLine();
                 }
-                */
+                
 
                 // Once user has entered valid input, continue to the action specified
                 switch (output)
@@ -260,6 +251,16 @@ namespace StoreApp.Application
 
 
 
+        private static void DisplayMainMenu()
+        {
+            Console.WriteLine("What would you like to do?\n");
 
+            Console.WriteLine("P - Place an Order");
+            Console.WriteLine("A - Add New Customer");
+            Console.WriteLine("C - Examine Customer");
+            Console.WriteLine("S - Examine Store Location\n");
+
+            Console.Write("Please enter a letter to choose an action: ");
+        }
     }
 }

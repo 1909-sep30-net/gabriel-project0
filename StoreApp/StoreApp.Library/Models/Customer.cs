@@ -85,7 +85,7 @@ namespace StoreApp.Library
         /// <summary>
         /// Holds the history of customer's orders
         /// </summary>
-        public List<Order> OrderLog { get; } = new List<Order>();
+        public List<Order> OrderLog { get; set; } = new List<Order>();
 
         private void ValidateName(string value)
         {

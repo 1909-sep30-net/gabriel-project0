@@ -1,4 +1,4 @@
-﻿using StoreApp.Library.Models;
+﻿using StoreApp.Library;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,7 +20,8 @@ namespace StoreApp.Library
         /// <summary>
         /// List of products and their quantity to be ordered
         /// </summary>
-        public Inventory ProductList { get; set; } = new Inventory();
+
+        public List<Item> ProductList { get; set; } = new List<Item>();
 
         /// <summary>
         /// Time that the order was sent
@@ -57,8 +58,8 @@ namespace StoreApp.Library
                 return false;
             }
 
-
-            if (ProductList.IsValid())
+            // If order's list doesn't have any items in it, order is invalid
+            if (ProductList.Count <= 0)
             {
                 return false;
             }

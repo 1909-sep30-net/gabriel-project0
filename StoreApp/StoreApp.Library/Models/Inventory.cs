@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace StoreApp.Library.Models
+namespace StoreApp.Library
 {
     public class Inventory
     {
@@ -12,7 +12,9 @@ namespace StoreApp.Library.Models
         /// Invetories are initiazlied with an empty list
         /// List items comprise of a product and a corresponding quantity
         /// </summary>
-        private List<Item> _myList = new List<Item>();
+        //private List<Item> MyList = new List<Item>();
+
+        public List<Item> MyList { get; set; }
 
         /// <summary>
         /// Checks if given product list contains a product with given name
@@ -22,7 +24,7 @@ namespace StoreApp.Library.Models
         /// <returns>True if contains, False if not</returns>
         public bool Contains(Product product)
         {
-            foreach (Item i in _myList)
+            foreach (Item i in MyList)
             {
                 if (i.product.ID == product.ID)
                 {
@@ -40,7 +42,7 @@ namespace StoreApp.Library.Models
         /// <returns>Returns the list item containing the given product; Null if not found</returns>
         public Item GetItem(Product product)
         {
-            foreach (Item i in _myList)
+            foreach (Item i in MyList)
             {
                 if (product.ID == i.product.ID)
                 {
@@ -78,8 +80,12 @@ namespace StoreApp.Library.Models
             // If inventory does not have the item, add a new item with that product and quantity
             if (listItem == null)
             {
-                listItem = new Item(product,quantity);
-                _myList.Add(listItem);
+                listItem = new Item
+                {
+                    product = product,
+                    quantity = quantity
+                };
+                MyList.Add(listItem);
             }
             // If inventory already has product, increase quantity of that product
             else
@@ -131,7 +137,7 @@ namespace StoreApp.Library.Models
             // If leftover quantity would be 0, simply remove product from list
             if (quantityLeft == 0)
             {
-                _myList.Remove(listItem);
+                MyList.Remove(listItem);
             }
             // If leftoever quantity is some positive number, proceed with decreasing quantity
             if (quantityLeft > 0 )
@@ -148,7 +154,7 @@ namespace StoreApp.Library.Models
         /// <returns></returns>
         public int Count()
         {
-            return _myList.Count;
+            return MyList.Count;
         }
 
         /// <summary>
@@ -169,15 +175,9 @@ namespace StoreApp.Library.Models
 
         public class Item
         {
-            public Product product;
-            public int quantity;
+            public Product product { get; set; }
+            public int quantity { get; set; }
 
-            // Must intialize non-empty item
-            public Item(Product p, int q)
-            {
-                product = p;
-                quantity = q;
-            }
         }
     }
 }

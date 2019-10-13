@@ -1,4 +1,4 @@
-﻿using StoreApp.Library.Models;
+﻿using StoreApp.Library;
 using System;
 using System.Collections.Generic;
 using System.Text;

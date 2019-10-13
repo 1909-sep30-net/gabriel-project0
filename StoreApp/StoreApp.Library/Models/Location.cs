@@ -1,4 +1,4 @@
-﻿using StoreApp.Library.Models;
+﻿using StoreApp.Library;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -57,7 +57,7 @@ namespace StoreApp.Library
         /// <remarks>
         /// Instantiate class with an empty inventory list
         /// </remarks>
-        public Inventory MyInventory { get; set; } = new Inventory();
+        public List<Item> Inventory { get; set; } = new List<Item>();
 
         /// <summary>
         /// Verifies if this location instance is valid
@@ -70,7 +70,7 @@ namespace StoreApp.Library
         public bool IsValid()
         {
             // Inventory size must be bigger than 0
-            if (MyInventory.Count() < 1)
+            if (Inventory.Count < 1)
             {
                 return false;
             }

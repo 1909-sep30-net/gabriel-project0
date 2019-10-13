@@ -1,4 +1,5 @@
-﻿using StoreApp.Library;
+﻿using StoreApp.DataAccess.Entities;
+using StoreApp.Library;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -39,7 +40,7 @@ namespace StoreApp.Application
             switch (optionType)
             {
                 // Options for application task
-                case 1:
+                case 0:
                     if (input == "p" || input == "a" || input == "c" || input == "s")
                     {
                         return true;
@@ -47,7 +48,7 @@ namespace StoreApp.Application
                     break;
 
                 // Options for modifying an order
-                case 2:
+                case 1:
                     if (input == "a" || input == "r" || input == "c" || input == "n")
                     {
                         return true;
@@ -86,6 +87,11 @@ namespace StoreApp.Application
                 }
             }
             return null;
+        }
+
+        static void DisplayCustomers(DoapSoapContext context)
+        {
+
         }
 
         // Checks if location with name exists in location list
