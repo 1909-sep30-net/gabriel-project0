@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StoreApp.DataAccess.Entities;
+using StoreApp.DataAccess.Repositories;
 using StoreApp.Library;
 
 namespace StoreApp.Application
@@ -16,8 +17,19 @@ namespace StoreApp.Application
         };
 
         public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
+        public static void DisplayMainMenu()
+        {
+            Console.WriteLine("What would you like to do?\n");
 
-        static void Main(string[] args)
+            Console.WriteLine("P - Place an Order");
+            Console.WriteLine("A - Add New Customer");
+            Console.WriteLine("C - Examine Customer");
+            Console.WriteLine("S - Examine Store Location\n");
+
+            Console.Write("Please enter a letter to choose an action: ");
+        }
+
+        public static void Main(string[] args)
         {
             var connectionString = SecretConfig.ConfigString;
 
@@ -27,6 +39,9 @@ namespace StoreApp.Application
                 .Options;
 
             using var context = new DoapSoapContext(options);
+
+
+            CustomerRepository CustomerRepo = new CustomerRepository(context);
 
             /* Start printing to console to guide user */
 
@@ -40,9 +55,9 @@ namespace StoreApp.Application
 
                 // Read input from the user. Keep asking for input until input is valid.
                 string input = Console.ReadLine();
-                char output = 'p';
+                char output;
                 
-                while (!InputParser.IsValidActionInput((int)Menus.Main, input, out output))
+                while (!InputParser.IsValidActionInput((int)Menus.Main, input))
                 {
                     Console.WriteLine("\nInput was not valid. \nPlease enter one of the following: 'P', 'A', 'C', 'S'\n");
 
@@ -50,13 +65,13 @@ namespace StoreApp.Application
 
                     input = Console.ReadLine();
                 }
-                
+                input.ToLower();
 
                 // Once user has entered valid input, continue to the action specified
-                switch (output)
+                switch (input)
                 {
                     // Place an order
-                    case 'p':
+                    case "p":
 
                         Order order = new Order();
 
@@ -64,9 +79,10 @@ namespace StoreApp.Application
                         Console.WriteLine("\nSelect the customer for this order: \n");
 
                         // Display list of customers in the database
+                        InputParser.DisplayCustomers(CustomerRepo.GetCustomers());
 
                         Console.WriteLine();
-                        Console.Write("Customer name: ");
+                        Console.Write("Customer ID: ");
 
                         // Select customer
                         // Read input from the user. Keep asking for input until input is valid.
@@ -203,7 +219,7 @@ namespace StoreApp.Application
                         break;
 
                     // Add a customer
-                    case 'a':
+                    case "a":
 
                         /* TODO: Fix all this lazy input handling */
 
@@ -219,7 +235,7 @@ namespace StoreApp.Application
                         break;
 
                     // Examine Customer
-                    case 'c':
+                    case "c":
                         // Display all available customers
 
                         // Select customer based on ID
@@ -232,7 +248,7 @@ namespace StoreApp.Application
                         break;
 
                     // Examine Store Location
-                    case 's':
+                    case "s":
                         // Display all available locations
 
                         // Select location based on ID
@@ -246,21 +262,6 @@ namespace StoreApp.Application
                 }
             }
         }
-
-        
-
-
-
-        private static void DisplayMainMenu()
-        {
-            Console.WriteLine("What would you like to do?\n");
-
-            Console.WriteLine("P - Place an Order");
-            Console.WriteLine("A - Add New Customer");
-            Console.WriteLine("C - Examine Customer");
-            Console.WriteLine("S - Examine Store Location\n");
-
-            Console.Write("Please enter a letter to choose an action: ");
-        }
     }
+
 }

@@ -2,6 +2,7 @@
 using StoreApp.Library;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace StoreApp.Application
@@ -19,11 +20,14 @@ namespace StoreApp.Application
         /// <param name="input"></param>
         /// <param name="output"></param>
         /// <returns>Returns the string being checked as a char.</returns>
-        public static bool IsValidActionInput(int optionType, string input, out char output)
+        public static bool IsValidActionInput(int optionType, string input)
         {
             // Check if null was passed in as argument
-            if (input == null)
+            if (string.IsNullOrEmpty(input))
             {
+                return false;
+
+                // Do I throw this here???
                 throw new ArgumentNullException("Input cannot be null.", nameof(input));
             }
 
@@ -31,8 +35,6 @@ namespace StoreApp.Application
             input = input.ToLower();
 
             // Send input out as a char
-            output = input[0];
-
 
             // If our input is not any of the available options, we can safely assume 
             //  that action input is not valid, return false
@@ -61,37 +63,55 @@ namespace StoreApp.Application
         }
 
         // Checks if customer name is in list of existing customers
-        static bool IsValidCustomerSelectionByName(string name)
+        public static void CustomerSelection(DoapSoapContext context)
         {
-            for (int i = 0; i < customers.Count; i++)
+            List<Customers> listOfCustomers;
+            DisplayCustomers(context, out listOfCustomers);
+
+            String input = Console.ReadLine();
+
+
+            if (CustomerInList(listOfCustomers, input))
             {
-                if (customers[i].Name == name)
+
+            }
+        }
+
+        public static bool CustomerInList(List<Customers> customers, string ID)
+        {
+            int intID = Convert.ToInt32(ID);
+
+            foreach (Customers customer in customers)
+            {
+                if (customer.CustomerId == intID)
                 {
                     return true;
                 }
             }
+
             return false;
         }
 
-        // Selects customer from list by a given name
-        static Customer SelectCustomerByName(string name)
+        /// <summary>
+        /// Given a list of customers, display their information
+        /// </summary>
+        /// <param name="customers"></param>
+        public static void DisplayCustomers(List<Library.Customer> customers)
         {
-            if (IsValidCustomerSelectionByName(name))
+            foreach (Library.Customer customer in customers)
             {
-                for (int i = 0; i < customers.Count; i++)
-                {
-                    if (customers[i].Name == name)
-                    {
-                        return customers[i];
-                    }
-                }
+                Console.WriteLine($"ID: {customer.CustomerId} | NAME: {customer.FirstName + " " + customer.LastName}");
             }
-            return null;
         }
 
-        static void DisplayCustomers(DoapSoapContext context)
+        public static void DisplayCustomers(DoapSoapContext context, out List<Customers> outlist)
         {
-
+            var customerEntities = context.Customers.ToList();
+            foreach (Customers customer in customerEntities)
+            {
+                Console.WriteLine($"ID: {customer.CustomerId} | NAME: {customer.FirstName + " " + customer.LastName}");
+            }
+            outlist = customerEntities;
         }
 
         // Checks if location with name exists in location list

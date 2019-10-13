@@ -10,7 +10,7 @@ namespace StoreApp.Library
         private Product _product;
         private int _quantity;
 
-        public Product product
+        public Product Product
         {
             get
             {

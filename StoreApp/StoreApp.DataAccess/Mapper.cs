@@ -39,6 +39,17 @@ namespace StoreApp.DataAccess
             return result;
         }
 
+        public static List<Library.Customer> MapCustomers(IEnumerable<Entities.Customers> entities)
+        {
+
+            List<Library.Customer> result = new List<Library.Customer>();
+            foreach (Entities.Customers entity in entities)
+            {
+                result.Add(MapCustomer(entity));
+            }
+            return result;
+        }
+
         /*------------------------------------------------------*/
 
 

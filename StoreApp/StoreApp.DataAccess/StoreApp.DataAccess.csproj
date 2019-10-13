@@ -12,4 +12,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StoreApp.Library\StoreApp.Library.csproj" />
+  </ItemGroup>
+
 </Project>
