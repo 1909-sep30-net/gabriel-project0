@@ -6,28 +6,13 @@ namespace StoreApp.Library.Models
 {
     public class Inventory
     {
-        private class Item
-        {
-            public Product product;
-            public int quantity;
 
-            // Must intialize non-empty item
-            public Item(Product p, int q)
-            {
-                product = p;
-                quantity = q;
-            }
-        }
 
         /// <summary>
         /// Invetories are initiazlied with an empty list
         /// List items comprise of a product and a corresponding quantity
         /// </summary>
-        //private List<Tuple<Product, int>> _myList = new List<Tuple<Product, int>>();
-
         private List<Item> _myList = new List<Item>();
-
-
 
         /// <summary>
         /// Checks if given product list contains a product with given name
@@ -37,62 +22,39 @@ namespace StoreApp.Library.Models
         /// <returns>True if contains, False if not</returns>
         public bool Contains(Product product)
         {
-            // Return false if GetItem returns null
-            Item listItem = GetItem(product);
-            if (listItem == null)
+            foreach (Item i in _myList)
             {
-                return false;
+                if (i.product.ID == product.ID)
+                {
+                    return true;
+                }
             }
-            else
-            {
-                return true;
-            }
-        }
 
-        ///// <summary>
-        ///// Checks if given product list contains a product with given name
-        ///// </summary>
-        ///// <param name="name">Name of product to be searched for</param>
-        ///// <param name="pl">Product list to be searched</param>
-        ///// <returns>True if contains, False if not</returns>
-        //public bool Contains(Product product, out Product foundProduct)
-        //{
-        //    // If GetItem returns something, out the result's Product and return true
-        //    Tuple<Product, int> listItem = GetItem(product);
-        //    foundProduct = listItem.Item1;
-        //    if (foundProduct!= null)
-        //    {
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        return false;
-        //    }
-        //}
+            return false;
+        }
 
         /// <summary>
         /// Returns a list item in the inventory matching with given product
         /// </summary>
         /// <param name="product"></param>
         /// <returns>Returns the list item containing the given product; Null if not found</returns>
-        //private Tuple<Product, int> GetItem(Product product);
-        private Item GetItem(Product product)
+        public Item GetItem(Product product)
         {
-            foreach (Item listItem in _myList)
+            foreach (Item i in _myList)
             {
-                // If there is a matching product in list, return
-                Product currProduct = listItem.product;
-                if (currProduct.Name == product.Name && currProduct.Price == product.Price
-                    && currProduct.Size == product.Size && currProduct.Color == product.Color)
+                if (product.ID == i.product.ID)
                 {
-                    return listItem;
+                    return i;
                 }
             }
+
+            // Returns null if product was not found in list
             return null;
         }
 
         /// <summary>
-        /// 
+        /// Adds a product to the inventory; a new reference to the product is added if it didnt already
+        /// exist, otherwise just increases a product's quantity
         /// </summary>
         /// <param name="product"></param>
         /// <param name="quantity"></param>
@@ -110,19 +72,111 @@ namespace StoreApp.Library.Models
                 throw new ArgumentNullException("Product cannot be null.", nameof(product));
             }
 
-            // If inventory already has particular product, fetch that product and 
-            // If inventory doesn't already have product, add it to list
+            // Fetch the item with specified  product from inventory's list
             Item listItem = GetItem(product);
+
+            // If inventory does not have the item, add a new item with that product and quantity
             if (listItem == null)
             {
                 listItem = new Item(product,quantity);
                 _myList.Add(listItem);
             }
-            // If inventory already has product, fetch corresponding list item and increase quantity
+            // If inventory already has product, increase quantity of that product
             else
             {
                 listItem.quantity += quantity;
-                _myList.Add(listItem);
+            }
+        }
+
+        /// <summary>
+        /// Removes a set amount of product from the inventory
+        /// </summary>
+        /// <remarks>
+        /// If the set amount will reduce the product quantity to 0, remove product from the inventory
+        /// </remarks>
+        /// <param name="product"></param>
+        /// <param name="quantity"></param>
+        public void Remove(Product product, int quantity)
+        {
+            // Validate quantity
+            if (quantity < 1)
+            {
+                throw new ArgumentException("Quantity added should be 1 or more.", nameof(quantity));
+            }
+
+            // Cannot add a null product
+            if (product == null)
+            {
+                throw new ArgumentNullException("Product cannot be null.", nameof(product));
+            }
+
+            // Fetch the item with specified  product from inventory's list
+            Item listItem = GetItem(product);
+
+            // If inventory does not have the item, add a new item with that product and quantity
+            if (listItem == null)
+            {
+                Console.WriteLine("Item does not exist in inventory.");
+                throw new ArgumentException("Item does not exist in inventory.",nameof(product));
+            }
+
+            // Amount of product left after decreasing
+            int quantityLeft = listItem.quantity - quantity;
+
+            // If leftover quantity would be less than 0, throw exception
+            if (quantityLeft < 0)
+            {
+                throw new ArgumentException("Quantity being removed is more than in inventory.", nameof(quantity));
+            }
+            // If leftover quantity would be 0, simply remove product from list
+            if (quantityLeft == 0)
+            {
+                _myList.Remove(listItem);
+            }
+            // If leftoever quantity is some positive number, proceed with decreasing quantity
+            if (quantityLeft > 0 )
+            {
+                listItem.quantity -= quantity;
+            }
+
+
+        }
+
+        /// <summary>
+        /// Returns the number of items in this inventory
+        /// </summary>
+        /// <returns></returns>
+        public int Count()
+        {
+            return _myList.Count;
+        }
+
+        /// <summary>
+        /// Checks if this inventory is valid (non empty)
+        /// </summary>
+        /// <returns></returns>
+        public bool IsValid()
+        {
+            if (Count() > 1)
+            {
+                return true;
+            } 
+            else
+            {
+                return false;
+            }
+        }
+
+        public class Item
+        {
+            public Product product;
+            public int quantity;
+
+            // Must intialize non-empty item
+            public Item(Product p, int q)
+            {
+                product = p;
+                quantity = q;
             }
         }
     }

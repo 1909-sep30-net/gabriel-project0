@@ -1,5 +1,4 @@
 ﻿using StoreApp.Library;
-using StoreApp.Library.Managers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,28 +9,67 @@ namespace StoreApp.Test
     public class OrderTest
     {
         Order order = new Order();
-        Customer customer = new Customer
-        {
-            FirstName = "Billy",
-            LastName = "Bob",
-        };
+
+        Customer customer = new Customer();
         Location location = new Location();
-        Product validProduct = new Product();
+        Product product = new Product();
 
-        /*
+        [Theory]
+        [InlineData("George Groose","Hope")]
+        [InlineData("Mestrul Maggis","Another Place")]
+        [InlineData("Regina George", "Underground")]
 
-        [Fact]
-        public void AddProduct_NonpositiveQuantity_ArgumentException()
+        public void IsValidOrder_ValidCustomerLocation_ReturnsTrue(string cusName, string locName)
         {
+            customer.Name = cusName;
+            location.Name = locName;
+            order.MyCustomer = customer;
+            order.MyLocation = location;
 
-            customer.Name = "Billy Bob";
-            order.MyCustomer = validCustomer;
-            order.MyLocation = validLocation;
-
-            Assert.Throws<ArgumentException>(() => OrderManager.AddProduct(order, validProduct, 0));
-
+            Assert.True(order.IsValidOrder());
         }
 
+        [Fact]
+        public void IsValidOrder_InvalidCustomer_ReturnsFalse()
+        {
+            location.Name = "Moe Town";
+            order.MyCustomer = customer;
+            order.MyLocation = location;
+
+            Assert.False(order.IsValidOrder());
+        }
+
+        [Fact]
+        public void IsValidOrder_InvalidLocation_ReturnsFalse()
+        {
+            customer.Name = "Georgiana";
+            order.MyCustomer = customer;
+            order.MyLocation = location;
+
+            Assert.False(order.IsValidOrder());
+        }
+
+        [Fact]
+        public void IsValidOrder_NullLocation_ReturnsFalse()
+        {
+
+            customer.Name = "Georgiana";
+            order.MyCustomer = customer;
+
+            Assert.False(order.IsValidOrder());
+        }
+
+        [Fact]
+        public void IsValidOrder_NullCustomer_ReturnsFalse()
+        {
+
+            location.Name = "Joe Town";
+            order.MyLocation = location;
+
+            Assert.False(order.IsValidOrder());
+        }
+
+        /*
         [Fact]
         public void AddProduct_PositiveQuantity_StoreProductCorrectly()
         {

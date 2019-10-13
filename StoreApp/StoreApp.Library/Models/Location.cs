@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StoreApp.Library.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -56,7 +57,32 @@ namespace StoreApp.Library
         /// <remarks>
         /// Instantiate class with an empty inventory list
         /// </remarks>
-        public List<Tuple<Product, int>> Inventory { get; set; } = new List<Tuple<Product, int>>();
+        public Inventory MyInventory { get; set; } = new Inventory();
+
+        /// <summary>
+        /// Verifies if this location instance is valid
+        /// </summary>
+        /// <remarks>
+        /// - Inventory must not be empty list
+        /// - Name must be non-null, non-empty string
+        /// </remarks>
+        /// <returns></returns>
+        public bool IsValid()
+        {
+            // Inventory size must be bigger than 0
+            if (MyInventory.Count() < 1)
+            {
+                return false;
+            }
+
+            // Name cannot be null or empty
+            if (string.IsNullOrEmpty(Name))
+            {
+                return false;
+            }
+
+            return true;
+        }
 
 
     }

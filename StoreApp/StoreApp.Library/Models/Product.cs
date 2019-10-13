@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StoreApp.Library.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,30 +7,19 @@ namespace StoreApp.Library
 {
     public class Product
     {
-
         /* Private backing fields for properties */
-
 
         private string _name;
 
         private decimal _price;
 
-        private string _size;
+        private int _colorID;
 
-        private string _color;
+        // Gonna keep our products simple for now lol
+        //private string _size;
+
 
         /* ------------------------------------- */
-
-        /// <summary>
-        /// Initialize all important values by default with default item properties
-        /// </summary>
-        public Product()
-        {
-            _name = "Default Soap";
-            _price = 1.00M;
-            _size = "smolboy";
-            _color = "black";
-        }
 
         /// <summary>
         /// Unique ID for every product type
@@ -85,48 +75,11 @@ namespace StoreApp.Library
                 _price = value;
             }
         }
-        /// <summary>
-        /// Size of the soap product
-        /// </summary>
-        public string Size
-        {
-            get
-            {
-                return _size;
-            }
-            set
-            {
-                value = value.ToLower();
-                // Must set size to valid size name
-                if (value != "smolboy" && value != "midkid" && value != "madman")
-                {
-                    throw new ArgumentException("Size must be Smolboy, Midkid, or Madman.", nameof(value));
-                }
 
-                _size = value;
-            }
-        }
-
-        /// <summary>
-        /// Color of the soap product
-        /// </summary>
-        public string Color 
-        { 
-            get
-            {
-                return _color;
-            }
-            set
-            {
-                // Must set color to black, white or green.
-                if (value != "black" && value != "white" && value != "green")
-                {
-                    throw new ArgumentException("Color must be black, white, or green.", nameof(value));
-                }
-
-                _color = value;
-            }
-        }
+        public int ColorID { get; set; }
 
     }
+
+   
+    
 }

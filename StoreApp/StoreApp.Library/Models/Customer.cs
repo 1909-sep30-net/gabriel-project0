@@ -27,18 +27,11 @@ namespace StoreApp.Library
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("Name cannot be null", nameof(value));
-                }
-                if (value.Length < 1)
-                {
-                    throw new ArgumentException("Name must be at least one letter", nameof(value));
-                }
+                // Error handling for invalid name settings
+                ValidateName(value);
 
                 // Always capitalize first letter and lowercase the rest
-                string newName = value[0].ToString().ToUpper() + value.Substring(1).ToLower();
-                _lastName = newName;
+                _firstName = value[0].ToString().ToUpper() + value.Substring(1).ToLower();
             }
         }
 
@@ -54,18 +47,11 @@ namespace StoreApp.Library
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("Name cannot be null", nameof(value));
-                }
-                if (value.Length < 1)
-                {
-                    throw new ArgumentException("Name must be at least one letter", nameof(value));
-                }
+                // Error handling for invalid name settings
+                ValidateName(value);
 
                 // Always capitalize first letter and lowercase the rest
-                string newName = value[0].ToString().ToUpper() + value.Substring(1).ToLower();
-                _lastName = newName;
+                _lastName = value[0].ToString().ToUpper() + value.Substring(1).ToLower();
             }
         }
 
@@ -81,13 +67,16 @@ namespace StoreApp.Library
 
             set
             {
+                // Split up input and delimit by spaces
                 string[] firstLastNames = value.Split(' ');
 
+                // If split doesn't return a two length string, then input wasn't a first and last name
                 if (firstLastNames.Length != 2)
                 {
-                    throw new ArgumentException("Name should two words", nameof(value));
+                    throw new ArgumentException("Name should be two words", nameof(value));
                 }
 
+                // Use properties to handle any other errors and set
                 FirstName = firstLastNames[0];
                 LastName = firstLastNames[1];
             }
@@ -98,6 +87,17 @@ namespace StoreApp.Library
         /// </summary>
         public List<Order> OrderLog { get; } = new List<Order>();
 
+        private void ValidateName(string value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("Name cannot be null", nameof(value));
+            }
+            if (value.Length < 1)
+            {
+                throw new ArgumentException("Name must be at least one letter", nameof(value));
+            }
+        }
 
     }
 
