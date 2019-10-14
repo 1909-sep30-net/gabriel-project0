@@ -35,7 +35,7 @@ namespace StoreApp.Application
 
             DbContextOptions<DoapSoapContext> options = new DbContextOptionsBuilder<DoapSoapContext>()
                 .UseSqlServer(connectionString)
-                .UseLoggerFactory(MyLoggerFactory)
+                //.UseLoggerFactory(MyLoggerFactory)
                 .Options;
 
             using var context = new DoapSoapContext(options);
@@ -74,7 +74,10 @@ namespace StoreApp.Application
                     // Place an order
                     case "p":
 
+                        // This is the order we will be modifying according to the user. If order is confirmed, use this, map it to the db entity form, then update the db with it
                         Order order = new Order();
+
+                        // If set to true, break out of the Place Order action
                         bool orderDone = false;
 
                         // Who's the Customer?
@@ -83,15 +86,29 @@ namespace StoreApp.Application
                         // Display list of customers in the database
                         InputParser.DisplayCustomers(CustomerRepo.GetCustomers());
 
-                        Console.WriteLine();
-                        Console.Write("Customer ID: ");
+                        Console.Write("\nCustomer ID: ");
 
                         // Select customer
                         // Read input from the user. Keep asking for input until input is valid.
                         input = Console.ReadLine();
-                        
+
                         // method that takes string input, tries to parse it as int. if successful, use int to find customer. if customer not found, input again.
-                        
+
+                        /*
+                         *  input = Console.ReadLine();
+                            int.TryParse(input, out custID);
+                            selectCustomer = CustomerRepo.GetCustomerByID(custID);
+
+                            // While input or customer isn't valid, keep trying to select a valid customer
+                            while (!int.TryParse(input, out custID) || selectCustomer == null)
+                            {
+                                Console.WriteLine("Input invalid. Enter valid customer ID.\n");
+
+                                // Enter their ID again
+                                input = Console.ReadLine();
+                                selectCustomer = CustomerRepo.GetCustomerByID(custID);
+                            }
+                         */
                         while ( !InputParser.CustomerInList(CustomerRepo, input) )
                         {
                             Console.WriteLine();
@@ -146,6 +163,7 @@ namespace StoreApp.Application
                             Console.WriteLine("C - Confirm Order");
                             Console.WriteLine("N - Cancel Order\n");
                             input = Console.ReadLine();
+
                             /*
                             while (!IsValidActionInput(2, input, out output))
                             {
@@ -226,19 +244,24 @@ namespace StoreApp.Application
                     // Add a customer
                     case "a":
 
+                        // Start setting up all requirements for a valid customer
                         Customer newCustomer = new Customer();
 
-                        while (newCustomer.Name == null) 
+                        //while (TryParse
+                        // While customer isn't valid, keep trying to create a valid customer
+                        while (!newCustomer.IsValid()) 
                         {
                             Console.WriteLine("Enter customer name:");
 
                             // Enter info for a customer -- their name
                             input = Console.ReadLine();
 
+                            // Try setting the name; 
                             try
                             {
                                 newCustomer.Name = input;
                             }
+                            //throw an exception if it's invalid and loop again since Name is still null
                             catch (ArgumentException ex)
                             {
                                 Console.WriteLine(ex.Message);
@@ -247,6 +270,8 @@ namespace StoreApp.Application
 
                         // Add customer to database
                         //customers.Add(new Customer(input));
+                        CustomerRepo.AddCustomer(newCustomer);
+                        CustomerRepo.SaveCustomer();
 
                         Console.WriteLine("Customer added!");
                         
@@ -254,27 +279,123 @@ namespace StoreApp.Application
 
                     // Examine Customer
                     case "c":
-                        // Display all available customers
+                        bool examiningCustomer = true;
+                        while (examiningCustomer)
+                        {
+                            Console.WriteLine("All available customers:\n");
 
-                        // Select customer based on ID
+                            // Display all available customers
+                            InputParser.DisplayCustomers(CustomerRepo.GetCustomers());
 
-                        // Display all customer info
+                            Customer selectCustomer = null;
 
-                            // Examine Order Log
-                            // Cancel
+                            // Select customer based on ID
+                            Console.Write("\nSelect a customer by ID: ");
+
+                            // Selected Customer ID will be parsed and stored from TryParse
+                            int custID;
+
+                            // While input or customer isn't valid, keep trying to select a valid customer
+                            do
+                            {
+                                input = Console.ReadLine();
+                                // If input is a valid int,
+                                if (int.TryParse(input, out custID))
+                                {
+                                    // Find customer with given id
+                                    selectCustomer = CustomerRepo.GetCustomerByID(custID);
+
+                                    // If customer does not exist, print error
+                                    if (selectCustomer == null)
+                                    {
+                                        Console.WriteLine("Input invalid. Enter valid customer ID.\n");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Input invalid. Enter a number.\n");
+                                }
+                            }
+                            while (selectCustomer == null);
+
+
+                            // Display all customer info: ID, Name, Orders
+                            InputParser.DisplayCustomer(selectCustomer);
+
+                            foreach(Order o in selectCustomer.OrderLog)
+                            {
+                                InputParser.DisplayOrder(o);
+                            }
+
+                            InputParser.DisplayOrders(selectCustomer.OrderLog);
+
+                            Console.WriteLine("\nEnter order ID to examine");
+
+                            int orderID;
+                            Order custOrder = null;
+
+                            // While input or order isn't valid, keep trying to select a valid order
+                            do
+                            {
+                                input = Console.ReadLine().ToLower();
+                                // If input is a valid int,
+                                if (input == "c")
+                                {
+                                    examiningCustomer = false;
+                                    break;
+                                }
+                                if (int.TryParse(input, out orderID))
+                                {
+                                    // Find customer with given id
+                                    custOrder = selectCustomer.OrderLog.Find(x => x.OrderID == orderID);
+                                    // If customer does not exist, print error
+                                    if (custOrder == null)
+                                    {
+                                        Console.WriteLine("Input invalid. Enter valid order ID.\n");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Input invalid. Enter a number.\n");
+                                }
+                            }
+                            while (custOrder == null);
+
+                            InputParser.DisplayOrder(custOrder);
+                        }
 
                         break;
 
                     // Examine Store Location
                     case "s":
                         // Display all available locations
+                        InputParser.DisplayLocations(LocationRepo.GetLocations());
 
+                        Console.Write("Select Location ID: ");
+
+                        // Select desired location
+                        // Read input from the user. Keep asking for input until input is valid.
+                        input = Console.ReadLine();
+
+
+                        while (!InputParser.LocationInList(LocationRepo, input))
+                        {
+                            Console.WriteLine();
+                            Console.Write("Location name: ");
+                            input = Console.ReadLine();
+                            Console.WriteLine();
+                        }
+
+                        ID = Convert.ToInt32(input);
+
+                        // Add location to order
+                        //order.MyLocation = LocationRepo.GetLocationByID(ID);
                         // Select location based on ID
 
                         // Display all location info
 
-                            // Examine Order Log
-                            // Cancel
+                        // Examine Order Log
+                        // Cancel
                         break;
 
                 }

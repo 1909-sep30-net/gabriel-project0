@@ -8,6 +8,11 @@ namespace StoreApp.Library
     public class Order
     {
         /// <summary>
+        /// Uniquely identifies which order this be
+        /// </summary>
+        public int OrderID { get; set; }
+
+        /// <summary>
         /// The customer that placed this order
         /// </summary>
         public Customer MyCustomer { get; set; }
@@ -37,23 +42,24 @@ namespace StoreApp.Library
         /// Checks:
         ///     - if ProductList size is at least >= 1
         ///     - if every item in ProductList has a corresponding quantity greater than 0
-        ///     - if MyCustomer is set
-        ///     - if MyLocation is set
+        ///     - if MyCustomer is set and valid
+        ///     - if MyLocation is set and valid
         /// </remarks>
         /// 
         /// <returns>
         /// Returns true if a valid order, false if not.
         /// </returns>
-        public bool IsValidOrder()
+        public bool IsValid()
         {
 
             // Not valid if Customer or Location have not been set to order yet
-            if (MyCustomer == null || MyLocation == null)
+            if ( MyCustomer == null || MyLocation == null )
             {
                 return false;
             }
 
-            if (MyLocation.IsValid())
+            // Not valid if Location or Customer isn't valid
+            if ( !MyLocation.IsValid() || !MyCustomer.IsValid() )
             {
                 return false;
             }

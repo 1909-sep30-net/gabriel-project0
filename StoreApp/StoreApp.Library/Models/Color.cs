@@ -7,7 +7,7 @@ namespace StoreApp.Library
     /* SCRAPPING THIS IDEA FOR NOW */
     public class Color
     {
-        private int _colorId;
+        //private int _colorId;
         private string _name;
 
         // An instance name is based on its ID, which maps to an array given by the db

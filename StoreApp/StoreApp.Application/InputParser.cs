@@ -63,7 +63,12 @@ namespace StoreApp.Application
             return false;
         }
 
-
+        /// <summary>
+        /// Check if customer is in the list
+        /// </summary>
+        /// <param name="cRepo"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public static bool CustomerInList(CustomerRepository cRepo, string ID)
         {
             int intID;
@@ -104,12 +109,63 @@ namespace StoreApp.Application
             return false;
         }
 
+        /// <summary>
+        /// Displays a list of locations by ID and Name
+        /// </summary>
+        /// <param name="locations"></param>
         public static void DisplayLocations(List<Library.Location> locations)
         {
             foreach (Library.Location location in locations)
             {
                 Console.WriteLine($"ID:\t{location.Id} | Name:\t {location.Name}");
             }
+        }
+
+        /// <summary>
+        /// Displays a single item
+        /// </summary>
+        /// <param name="item"></param>
+        public static void DisplayItem(Library.Item item)
+        {
+            Console.WriteLine($"Name:\t{item.Product.Name} | Quantity:\t{item.Quantity}\n");
+        }
+
+        public static void DisplayItems(List<Library.Item> items)
+        {
+            foreach (Library.Item item in items)
+            {
+                DisplayItem(item);
+            }
+        }
+
+        /// <summary>
+        /// Display a single model order
+        /// </summary>
+        /// <param name="order"></param>
+        public static void DisplayOrder(Library.Order order)
+        {
+            if (order != null)
+            {
+                Console.WriteLine($"Customer:\t{order.MyCustomer.Name} | Location:\t{order.MyLocation.Name}");
+                Console.WriteLine(); //TODO display order's items
+                DisplayItems(order.ProductList);
+            }
+        }
+
+        /// <summary>
+        /// Display a list of model orders
+        /// </summary>
+        public static void DisplayOrders(List<Library.Order> orders)
+        {
+            foreach (Library.Order order in orders)
+            {
+                DisplayOrder(order);
+            }
+        }
+
+        public static void DisplayCustomer(Library.Customer customer)
+        {
+            Console.WriteLine($"ID:\t{customer.CustomerId} | NAME:\t{customer.FirstName + " " + customer.LastName}");
         }
 
         /// <summary>
@@ -120,10 +176,11 @@ namespace StoreApp.Application
         {
             foreach (Library.Customer customer in customers)
             {
-                Console.WriteLine($"ID:\t{customer.CustomerId} | NAME:\t{customer.FirstName + " " + customer.LastName}");
+                DisplayCustomer(customer);
             }
         }
 
+        /*
         public static void DisplayCustomers(DoapSoapContext context, out List<Customers> outlist)
         {
             var customerEntities = context.Customers.ToList();
@@ -133,6 +190,7 @@ namespace StoreApp.Application
             }
             outlist = customerEntities;
         }
+        */
 
         // Checks if location with name exists in location list
         static bool IsValidLocationSelectionByName(string name)

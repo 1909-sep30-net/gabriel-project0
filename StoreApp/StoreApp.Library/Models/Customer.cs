@@ -87,6 +87,10 @@ namespace StoreApp.Library
         /// </summary>
         public List<Order> OrderLog { get; set; } = new List<Order>();
 
+        /// <summary>
+        /// Error handling for inserting a name
+        /// </summary>
+        /// <param name="value"></param>
         private void ValidateName(string value)
         {
             if (value == null)
@@ -98,7 +102,26 @@ namespace StoreApp.Library
                 throw new ArgumentException("Name must be at least one letter", nameof(value));
             }
         }
+        public bool IsValid()
+        {
+            // If the first or last name isn't set, this isn't a valid customer
+            if (FirstName == null || LastName == null)
+            {
+                return false;
+            }
 
+            return true;
+        }
+
+        /// <summary>
+        /// Returns an order from customer's orderlog, or null if not found
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public Order GetOrder(int ID)
+        {
+            return OrderLog.Find(x => x.OrderID == ID);
+        }
     }
 
 }

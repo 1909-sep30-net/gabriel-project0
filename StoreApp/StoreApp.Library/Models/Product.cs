@@ -13,9 +13,9 @@ namespace StoreApp.Library
 
         private decimal _price;
 
-        private int _colorID;
+        //private int _colorID;
 
-        // Gonna keep our products simple for now lol
+        // Gonna keep our products simple for now
         //private string _size;
 
 
@@ -33,6 +33,9 @@ namespace StoreApp.Library
         /// <summary>
         /// Name of the soap product
         /// </summary>
+        /// <remarks> 
+        /// Will throw an exception if name to be set is null or empty 
+        /// </remarks>
         public string Name 
         {
             get
@@ -76,7 +79,24 @@ namespace StoreApp.Library
             }
         }
 
+        /// <summary>
+        /// Determines the color that product has
+        /// </summary>
         public int ColorID { get; set; }
+
+        /// <summary>
+        /// A product is valid if it's name isn't null and it's price is set (not 0)
+        /// </summary>
+        /// <returns></returns>
+        public bool IsValid()
+        {
+            if (Name == null || Price == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
     }
 

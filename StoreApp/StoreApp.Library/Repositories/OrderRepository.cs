@@ -6,19 +6,6 @@ namespace StoreApp.Library.Repositories
 {
     public class OrderRepository
     {
-        /*
- * Returns total price of the order
- * - iterates through productList, adds up each item's price
- *   and returns the sum
- *   
- * Edge Cases:
- *  - if list is empty
- */
-        public int ReturnTotalPrice()
-        {
-            return 0;
-        }
-
         // Add product to product list
         /*
          * Add product to product list
@@ -28,7 +15,7 @@ namespace StoreApp.Library.Repositories
          *  - quantity is too high or <= 0
          * 
          */
-        public void AddProduct(Product product, int quantity)
+        public void addProduct(Product product, int quantity)
         {
 
         }
@@ -46,13 +33,6 @@ namespace StoreApp.Library.Repositories
 
         }
 
-        /*
-         * Clear current order; resets the list
-         */
-        public void clearOrder()
-        {
-
-        }
 
         /*
          * Checks if order is valid

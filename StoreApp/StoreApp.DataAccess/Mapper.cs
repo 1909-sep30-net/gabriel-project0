@@ -1,6 +1,7 @@
 ﻿using StoreApp.Library;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace StoreApp.DataAccess
@@ -17,7 +18,7 @@ namespace StoreApp.DataAccess
         {
             Entities.Customers result = new Entities.Customers
             {
-                CustomerId = model.CustomerId,
+                //CustomerId = model.CustomerId,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Orders = MapOrderLog(model.OrderLog)
@@ -33,7 +34,7 @@ namespace StoreApp.DataAccess
                 CustomerId = dbmodel.CustomerId,
                 FirstName = dbmodel.FirstName,
                 LastName = dbmodel.LastName,
-                OrderLog = MapOrderLog(dbmodel.Orders)// ADD ORDERS
+                OrderLog = MapOrderLog(dbmodel.Orders.ToList())
             };
 
             return result;
@@ -74,7 +75,7 @@ namespace StoreApp.DataAccess
             {
                 Id = dbmodel.LocationId,
                 Name = dbmodel.Name,
-                OrderLog = MapOrderLog(dbmodel.Orders),
+                OrderLog = MapOrderLog(dbmodel.Orders.ToList()),
                 Inventory = MapInventory(dbmodel.InventoryItems)
             };
 
@@ -97,7 +98,8 @@ namespace StoreApp.DataAccess
                 LocationId = model.MyLocation.Id,
 
                 OrderItems = MapInventory(model),
-                TimeConfirmed = model.MyTime
+                TimeConfirmed = model.MyTime,
+                OrderId = model.OrderID
             };
 
             return result;
@@ -107,6 +109,7 @@ namespace StoreApp.DataAccess
         {
             Library.Order result = new Library.Order
             {
+                OrderID = dbmodel.OrderId,
                 MyCustomer = MapCustomer(dbmodel.Customer),
                 MyLocation = MapLocation(dbmodel.Location),
                 MyTime = dbmodel.TimeConfirmed,
@@ -122,10 +125,10 @@ namespace StoreApp.DataAccess
 
         /* OrderList mapping -----------------------------------*/
 
-        public static List<Library.Order> MapOrderLog( ICollection<Entities.Orders> dbmodel)
+        public static List<Library.Order> MapOrderLog( List<Entities.Orders> dbmodel)
         {
             List<Library.Order> result = new List<Library.Order>();
-            foreach( Entities.Orders order in dbmodel)
+            foreach(Entities.Orders order in dbmodel)
             {
                 result.Add(MapOrder(order));
             }
@@ -205,13 +208,11 @@ namespace StoreApp.DataAccess
 
         public static List<Library.Item> MapInventory(ICollection<Entities.InventoryItems> dbmodel)
         {
-
-            List<Library.Item> result= new List<Library.Item>();
+            List<Library.Item> result = new List<Library.Item>();
             foreach(Entities.InventoryItems item in dbmodel)
             {
                 result.Add(MapInventoryItem(item));
             }
-
             return result;
 
         }
