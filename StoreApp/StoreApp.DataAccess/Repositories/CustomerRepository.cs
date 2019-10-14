@@ -31,12 +31,14 @@ namespace StoreApp.DataAccess.Repositories
             return Mapper.MapCustomers(entities);
         }
 
+        /// <summary>
+        /// Returns a ModelCustomer if id matches, otherwise returns null
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public Library.Customer GetCustomerByID(int id)
         {
-            Customers entity = dbcontext.Customers.Find(id);
-            Library.Customer modelToEntity = Mapper.MapCustomer(entity);
-
-            return modelToEntity;
+            return Mapper.MapCustomer(dbcontext.Customers.Find(id)) ?? null;
         }
 
         /// <summary>

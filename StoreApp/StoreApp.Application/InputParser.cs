@@ -1,4 +1,5 @@
 ﻿using StoreApp.DataAccess.Entities;
+using StoreApp.DataAccess.Repositories;
 using StoreApp.Library;
 using System;
 using System.Collections.Generic;
@@ -62,34 +63,53 @@ namespace StoreApp.Application
             return false;
         }
 
-        // Checks if customer name is in list of existing customers
-        public static void CustomerSelection(DoapSoapContext context)
+
+        public static bool CustomerInList(CustomerRepository cRepo, string ID)
         {
-            List<Customers> listOfCustomers;
-            DisplayCustomers(context, out listOfCustomers);
-
-            String input = Console.ReadLine();
-
-
-            if (CustomerInList(listOfCustomers, input))
+            int intID;
+            if (int.TryParse(ID, out intID))
             {
-
-            }
-        }
-
-        public static bool CustomerInList(List<Customers> customers, string ID)
-        {
-            int intID = Convert.ToInt32(ID);
-
-            foreach (Customers customer in customers)
-            {
-                if (customer.CustomerId == intID)
+                if(cRepo.GetCustomerByID(intID) != null)
                 {
                     return true;
                 }
             }
+            else
+            {
+                Console.WriteLine("Input invalid. Try again.");
+                return false;
+            }
 
+            Console.WriteLine("Customer not found. Try again.");
             return false;
+        }
+
+        public static bool LocationInList(LocationRepository lRepo, string ID)
+        {
+            int intID;
+            if (int.TryParse(ID, out intID))
+            {
+                if (lRepo.GetLocationByID(intID) != null)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Input invalid. Try again.");
+                return false;
+            }
+
+            Console.WriteLine("Location not found. Try again.");
+            return false;
+        }
+
+        public static void DisplayLocations(List<Library.Location> locations)
+        {
+            foreach (Library.Location location in locations)
+            {
+                Console.WriteLine($"ID:\t{location.Id} | Name:\t {location.Name}");
+            }
         }
 
         /// <summary>
@@ -100,7 +120,7 @@ namespace StoreApp.Application
         {
             foreach (Library.Customer customer in customers)
             {
-                Console.WriteLine($"ID: {customer.CustomerId} | NAME: {customer.FirstName + " " + customer.LastName}");
+                Console.WriteLine($"ID:\t{customer.CustomerId} | NAME:\t{customer.FirstName + " " + customer.LastName}");
             }
         }
 

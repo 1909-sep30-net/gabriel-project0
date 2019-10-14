@@ -42,6 +42,7 @@ namespace StoreApp.Application
 
 
             CustomerRepository CustomerRepo = new CustomerRepository(context);
+            LocationRepository LocationRepo = new LocationRepository(context);
 
             /* Start printing to console to guide user */
 
@@ -74,6 +75,7 @@ namespace StoreApp.Application
                     case "p":
 
                         Order order = new Order();
+                        bool orderDone = false;
 
                         // Who's the Customer?
                         Console.WriteLine("\nSelect the customer for this order: \n");
@@ -87,48 +89,51 @@ namespace StoreApp.Application
                         // Select customer
                         // Read input from the user. Keep asking for input until input is valid.
                         input = Console.ReadLine();
-
-                        /*
-                        while (!IsValidCustomerSelectionByName(input))
+                        
+                        // method that takes string input, tries to parse it as int. if successful, use int to find customer. if customer not found, input again.
+                        
+                        while ( !InputParser.CustomerInList(CustomerRepo, input) )
                         {
-                            Console.WriteLine("Input was not valid. Please enter the name of a customer.\n");
                             Console.WriteLine();
                             Console.Write("Customer name: ");
                             input = Console.ReadLine();
                             Console.WriteLine();
                         }
-                        */
+                        
+                        // Convert input string into int to be read by the customer repo
+                        int ID = Convert.ToInt32(input);
+                        order.MyCustomer = CustomerRepo.GetCustomerByID(ID);
 
-                        // Add customer to order
-                        //order.MyCustomer = SelectCustomerByName(input);
+                        Console.WriteLine("Customer successfully added to order.\n");
 
                         // For which location?
-                        Console.WriteLine("For which location is this order being placed?");
-
+                        Console.WriteLine("Locations List:");
                         // Display list of locations in the database
+                        InputParser.DisplayLocations(LocationRepo.GetLocations());
 
+                        Console.WriteLine("\nFor which location is this order being placed?\n");
                         Console.WriteLine();
-                        Console.Write("Location name: ");
+                        Console.Write("Location ID: ");
 
                         // Select desired location
                         // Read input from the user. Keep asking for input until input is valid.
                         input = Console.ReadLine();
 
-                        /*
-                        while (!IsValidLocationSelectionByName(input))
+                        
+                        while ( !InputParser.LocationInList(LocationRepo, input) )
                         {
-                            Console.WriteLine("Input was not valid. \nPlease enter the name of a location.");
                             Console.WriteLine();
                             Console.Write("Location name: ");
                             input = Console.ReadLine();
+                            Console.WriteLine();
                         }
-                        */
+
+                        ID = Convert.ToInt32(input);
 
                         // Add location to order
-                        //order.MyLocation = SelectLocationByName(input);
+                        order.MyLocation = LocationRepo.GetLocationByID(ID);
 
                         // TODO: Put this option into a loop that only terminates once order is confirmed or user wants to cancel
-                        bool orderDone = false;
 
                         // Loop until user is done modifying order
                         while (!orderDone)
@@ -157,10 +162,10 @@ namespace StoreApp.Application
                             }
                             */
 
-                            switch (output)
+                            switch (input)
                             {
                                 // Add a product and quantity to order
-                                case 'a':
+                                case "a":
 
                                     /* ~TODO~ Fill out these comments */
 
@@ -179,7 +184,7 @@ namespace StoreApp.Application
                                     break;
 
                                 // Remove a product from the order
-                                case 'r':
+                                case "r":
 
                                     // Display order's list items
 
@@ -194,7 +199,7 @@ namespace StoreApp.Application
                                     break;
 
                                 // Confirm the order
-                                case 'c':
+                                case "c":
 
                                     // Check if order is valid
 
@@ -207,7 +212,7 @@ namespace StoreApp.Application
                                     break;
 
                                 // Cancel the order
-                                case 'n':
+                                case "n":
 
                                     // Exits the loop
                                     orderDone = true;
@@ -221,11 +226,24 @@ namespace StoreApp.Application
                     // Add a customer
                     case "a":
 
-                        /* TODO: Fix all this lazy input handling */
+                        Customer newCustomer = new Customer();
 
-                        Console.WriteLine("Enter customer name:");
-                        // Enter info for a customer -- their name
-                        input = Console.ReadLine();
+                        while (newCustomer.Name == null) 
+                        {
+                            Console.WriteLine("Enter customer name:");
+
+                            // Enter info for a customer -- their name
+                            input = Console.ReadLine();
+
+                            try
+                            {
+                                newCustomer.Name = input;
+                            }
+                            catch (ArgumentException ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                        }
 
                         // Add customer to database
                         //customers.Add(new Customer(input));
