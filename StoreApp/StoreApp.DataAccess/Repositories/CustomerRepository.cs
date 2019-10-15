@@ -31,10 +31,7 @@ namespace StoreApp.DataAccess.Repositories
         /// <returns></returns>
         public IEnumerable<Library.Customer> GetCustomers()
         {
-            IQueryable<Entities.Customers> entities = dbcontext.Customers.AsNoTracking();
-
-            return entities.Select(Mapper.MapCustomer).ToList();
-
+            return dbcontext.Customers.Select(Mapper.MapCustomer).ToList();
         }
 
         /// <summary>
@@ -48,32 +45,26 @@ namespace StoreApp.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Returns a ModelCustomer if id matches, and also grabs Customer's orders; otherwise returns null
+        /// Returns a list of customers with names matching with the given
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        public Library.Customer GetCustomerWithOrderByID(int id)
+        public IEnumerable<Library.Customer> GetCustomersByString(string name)
         {
-            var entity = dbcontext.Customers.Find(id);
-            var entityOrders = dbcontext.Orders.Where(o => o.CustomerId == entity.CustomerId).ToList();
-            entity.Orders = entityOrders;
-            return Mapper.MapCustomer(entity);
-            //var modelOrders = entityOrders.Select(Mapper.Order).To
-            //var model = Mapper.MapCustomer(entity);
-            //model.OrderLog = entityOrders;
-            return null;
-            //return Mapper.MapCustomer(dbcontext.Customers.Find(id)) ?? null;
+            string[] fullName = name.Split(' ');
+            if (fullName.Length != 2)
+            {
+                throw new ArgumentException("Must enter first and last name.", nameof(name));
+            }
+            // Return customers where first name and last name match up with the string given, ignoring case
+            return dbcontext.Customers
+                .Where(c => c.FirstName.Equals(fullName[0],StringComparison.InvariantCultureIgnoreCase) 
+                        || c.LastName.Equals(fullName[1],StringComparison.InvariantCultureIgnoreCase))
+                .Select(Mapper.MapCustomer)
+                .ToList();
         }
 
-        public IEnumerable<Library.Order> GetOrdersWithProductsByCustomerID(int id)
-        {
-            var orders = dbcontext.Orders
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.OrderItem)
-                .Where(o => o.CustomerId == id);
 
-            return orders.Select(Mapper.MapOrder).ToList();
-        }
 
         /*
         public IEnumerable<Library.Item> GetProductsInOrderByID(int orderID)

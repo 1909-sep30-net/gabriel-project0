@@ -73,5 +73,19 @@ namespace StoreApp.Library
 
             return true;
         }
+
+        /// <summary>
+        /// Prints the total amount of money this order is worth
+        /// </summary>
+        /// <returns></returns>
+        public decimal GetTotal()
+        {
+            decimal sum = 0;
+            foreach (Item item in ProductList)
+            {
+                sum += item.Product.Price;
+            }
+            return sum;
+        }
     }
 }
