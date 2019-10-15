@@ -7,7 +7,7 @@ namespace StoreApp.DataAccess.Repositories
 {
     public class OrderRepository
     {
-        private DoapSoapContext dbcontext;
+        //private DoapSoapContext dbcontext;
 
         //CRUD
 

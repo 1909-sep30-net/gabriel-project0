@@ -110,6 +110,15 @@ namespace StoreApp.Application
         }
 
         /// <summary>
+        /// Display details of a location
+        /// </summary>
+        /// <param name="location"></param>
+        public static void DisplayLocation(Library.Location location)
+        {
+            Console.WriteLine($"ID:\t{location.Id} | Name:\t {location.Name}");
+        }
+
+        /// <summary>
         /// Displays a list of locations by ID and Name
         /// </summary>
         /// <param name="locations"></param>
@@ -117,9 +126,11 @@ namespace StoreApp.Application
         {
             foreach (Library.Location location in locations)
             {
-                Console.WriteLine($"ID:\t{location.Id} | Name:\t {location.Name}");
+                DisplayLocation(location);
             }
         }
+
+        
 
         /// <summary>
         /// Displays a single item
@@ -146,7 +157,9 @@ namespace StoreApp.Application
         {
             if (order != null)
             {
-                Console.WriteLine($"Customer:\t{order.MyCustomer.Name} | Location:\t{order.MyLocation.Name}");
+                Console.WriteLine("----------------------------------------");
+                Console.WriteLine($"OrderID:\t{order.MyTime}\n");
+                Console.WriteLine($"Customer:\t{order.MyCustomer.Name} | Location:\t{order.MyLocation.Name} | Time Placed:\t{order.MyTime}\n");
                 Console.WriteLine(); //TODO display order's items
                 DisplayItems(order.ProductList);
             }

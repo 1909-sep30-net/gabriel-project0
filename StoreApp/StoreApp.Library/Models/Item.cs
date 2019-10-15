@@ -9,6 +9,11 @@ namespace StoreApp.Library
         // Private backing fields
         private Product _product;
         private int _quantity;
+        
+        /// <summary>
+        /// Identifies which item this is (in a list of items)
+        /// </summary>
+        //public int ItemID { get; set; }
 
         public Product Product
         {

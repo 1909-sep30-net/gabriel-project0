@@ -92,39 +92,32 @@ namespace StoreApp.Application
                         // Read input from the user. Keep asking for input until input is valid.
                         input = Console.ReadLine();
 
+                        int customerID;
+
                         // method that takes string input, tries to parse it as int. if successful, use int to find customer. if customer not found, input again.
-
-                        /*
-                         *  input = Console.ReadLine();
-                            int.TryParse(input, out custID);
-                            selectCustomer = CustomerRepo.GetCustomerByID(custID);
-
-                            // While input or customer isn't valid, keep trying to select a valid customer
-                            while (!int.TryParse(input, out custID) || selectCustomer == null)
-                            {
-                                Console.WriteLine("Input invalid. Enter valid customer ID.\n");
-
-                                // Enter their ID again
-                                input = Console.ReadLine();
-                                selectCustomer = CustomerRepo.GetCustomerByID(custID);
-                            }
-                         */
-                        while ( !InputParser.CustomerInList(CustomerRepo, input) )
+                        while (!int.TryParse(input, out customerID) || CustomerRepo.GetCustomerByID(customerID) == null)
                         {
-                            Console.WriteLine();
-                            Console.Write("Customer name: ");
+                            Console.WriteLine("Input invalid. Try again.");
+                            Console.Write("Customer ID: ");
                             input = Console.ReadLine();
-                            Console.WriteLine();
+                            if (input.ToLower() == "c")
+                            {
+                                orderDone = true;
+                                break;
+                            }
                         }
-                        
-                        // Convert input string into int to be read by the customer repo
-                        int ID = Convert.ToInt32(input);
-                        order.MyCustomer = CustomerRepo.GetCustomerByID(ID);
+                        if (orderDone)
+                        {
+                            break;
+                        }
 
-                        Console.WriteLine("Customer successfully added to order.\n");
+                        order.MyCustomer = CustomerRepo.GetCustomerByID(customerID);                       
+
+                        Console.WriteLine("Order customer successfully set.\n");
 
                         // For which location?
-                        Console.WriteLine("Locations List:");
+                        Console.WriteLine("Locations List:\n");
+
                         // Display list of locations in the database
                         InputParser.DisplayLocations(LocationRepo.GetLocations());
 
@@ -136,19 +129,28 @@ namespace StoreApp.Application
                         // Read input from the user. Keep asking for input until input is valid.
                         input = Console.ReadLine();
 
-                        
-                        while ( !InputParser.LocationInList(LocationRepo, input) )
+
+                        int locationID;
+
+                        // method that takes string input, tries to parse it as int. if successful, use int to find customer. if customer not found, input again.
+                        while (!int.TryParse(input, out locationID) || LocationRepo.GetLocationByID(locationID) == null)
                         {
-                            Console.WriteLine();
-                            Console.Write("Location name: ");
+                            Console.WriteLine("Input invalid. Try again.");
+                            Console.Write("Location ID: ");
                             input = Console.ReadLine();
-                            Console.WriteLine();
+                            if (input.ToLower() == "c")
+                            {
+                                orderDone = true;
+                                break;
+                            }
+                        }
+                        if (orderDone)
+                        {
+                            break;
                         }
 
-                        ID = Convert.ToInt32(input);
-
                         // Add location to order
-                        order.MyLocation = LocationRepo.GetLocationByID(ID);
+                        order.MyLocation = LocationRepo.GetLocationByID(locationID);
 
                         // TODO: Put this option into a loop that only terminates once order is confirmed or user wants to cancel
 
@@ -368,36 +370,57 @@ namespace StoreApp.Application
 
                     // Examine Store Location
                     case "s":
-                        // Display all available locations
-                        InputParser.DisplayLocations(LocationRepo.GetLocations());
-
-                        Console.Write("Select Location ID: ");
-
-                        // Select desired location
-                        // Read input from the user. Keep asking for input until input is valid.
-                        input = Console.ReadLine();
-
-
-                        while (!InputParser.LocationInList(LocationRepo, input))
+                        bool examiningStore = true;
+                        while (examiningStore)
                         {
-                            Console.WriteLine();
-                            Console.Write("Location name: ");
+                            // Display all available locations
+                            InputParser.DisplayLocations(LocationRepo.GetLocations());
+
+                            Console.Write("Select Location ID: ");
+
+                            // Select desired location
+                            // Read input from the user. Keep asking for input until input is valid.
+
                             input = Console.ReadLine();
+                            if (input.ToLower() == "c")
+                            {
+                                examiningStore = false;
+                                break;
+                            }
+                            while (!int.TryParse(input, out locationID) || LocationRepo.GetLocationByID(locationID) == null)
+                            {
+                                
+                                Console.WriteLine("Input invalid. Try again.");
+                                Console.WriteLine("Enter Location ID or C to cancel: ");
+                                input = Console.ReadLine();
+                                if (input.ToLower() == "c")
+                                {
+                                    examiningStore = false;
+                                    break;
+                                }
+                            }
+                            if (!examiningStore)
+                            {
+                                break;
+                            }
+
+                            Location myLocation = LocationRepo.GetLocationByID(locationID);
+
                             Console.WriteLine();
+                            InputParser.DisplayLocation(myLocation);
+                            Console.WriteLine("\n Inventory:");
+                            InputParser.DisplayItems(myLocation.Inventory);
+                            Console.WriteLine($"inventory count: {myLocation.Inventory.Count}");
+                            Console.WriteLine("Location info displayed.");
+                            LocationRepo.DisplayItems();
+                            Console.WriteLine("now inventoryitem info displayed.");
+
+                            // Display all location info
+
+                            // Examine Order Log
+                            // Cancel
                         }
-
-                        ID = Convert.ToInt32(input);
-
-                        // Add location to order
-                        //order.MyLocation = LocationRepo.GetLocationByID(ID);
-                        // Select location based on ID
-
-                        // Display all location info
-
-                        // Examine Order Log
-                        // Cancel
                         break;
-
                 }
             }
         }

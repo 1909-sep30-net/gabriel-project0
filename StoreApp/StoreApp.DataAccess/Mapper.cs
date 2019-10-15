@@ -40,17 +40,6 @@ namespace StoreApp.DataAccess
             return result;
         }
 
-        public static List<Library.Customer> MapCustomers(IEnumerable<Entities.Customers> entities)
-        {
-
-            List<Library.Customer> result = new List<Library.Customer>();
-            foreach (Entities.Customers entity in entities)
-            {
-                result.Add(MapCustomer(entity));
-            }
-            return result;
-        }
-
         /*------------------------------------------------------*/
 
 
@@ -62,8 +51,8 @@ namespace StoreApp.DataAccess
             {
                 LocationId = model.Id,
                 Name = model.Name,
-                Orders = MapOrderLog(model.OrderLog),
-                InventoryItems = MapInventory(model)
+                Orders = model.OrderLog.Select(MapOrder).ToList(),
+                InventoryItems = model.Inventory.Select(i => MapInventoryItem(model,i)).ToList()
             };
 
             return result;
@@ -75,10 +64,21 @@ namespace StoreApp.DataAccess
             {
                 Id = dbmodel.LocationId,
                 Name = dbmodel.Name,
-                OrderLog = MapOrderLog(dbmodel.Orders.ToList()),
-                Inventory = MapInventory(dbmodel.InventoryItems)
+                OrderLog = dbmodel.Orders.Select(MapOrder).ToList(),
+                Inventory = dbmodel.InventoryItems.Select(MapInventoryItem).ToList()
             };
 
+            return result;
+        }
+
+        public static List<Library.Location> MapLocations(IEnumerable<Entities.Locations> entities)
+        {
+
+            List<Library.Location> result = new List<Library.Location>();
+            foreach (Entities.Locations entity in entities)
+            {
+                result.Add(MapLocation(entity));
+            }
             return result;
         }
 
@@ -97,7 +97,7 @@ namespace StoreApp.DataAccess
                 Location = MapLocation(model.MyLocation),
                 LocationId = model.MyLocation.Id,
 
-                OrderItems = MapInventory(model),
+                OrderItems = model.ProductList.Select(i => MapOrderItem(model,i)).ToList(),
                 TimeConfirmed = model.MyTime,
                 OrderId = model.OrderID
             };
@@ -113,8 +113,7 @@ namespace StoreApp.DataAccess
                 MyCustomer = MapCustomer(dbmodel.Customer),
                 MyLocation = MapLocation(dbmodel.Location),
                 MyTime = dbmodel.TimeConfirmed,
-
-                ProductList = MapInventory(dbmodel.OrderItems)
+                ProductList = dbmodel.OrderItems.Select(MapOrderItem).ToList(),
             };
 
             return result;
@@ -231,25 +230,25 @@ namespace StoreApp.DataAccess
 
         /* ProductList to OrderItems List Mapping */
 
-        public static List<Library.Item> MapInventory(ICollection<Entities.OrderItems> dbmodel)
+        public static List<Library.Item> MapOrderInventory(ICollection<Entities.OrderItems> dbmodel)
         {
 
             List<Library.Item> result = new List<Library.Item>();
             foreach (Entities.OrderItems item in dbmodel)
             {
-                result.Add(MapInventoryItem(item));
+                result.Add(MapOrderItem(item));
             }
 
             return result;
 
         }
 
-        public static List<Entities.OrderItems> MapInventory(Library.Order modelO)
+        public static List<Entities.OrderItems> MapOrderInventory(Library.Order modelO)
         {
             List<Entities.OrderItems> result = new List<Entities.OrderItems>();
             foreach (Library.Item item in modelO.ProductList)
             {
-                result.Add(MapInventoryItem(modelO, item));
+                result.Add(MapOrderItem(modelO, item));
             }
             return result;
         }
@@ -286,7 +285,7 @@ namespace StoreApp.DataAccess
         /* --------------------------------------------------------- */
 
         /* Item to OrderItems Mapping */
-        public static Entities.OrderItems MapInventoryItem(Library.Order modelO, Library.Item modelI)
+        public static Entities.OrderItems MapOrderItem(Library.Order modelO, Library.Item modelI)
         {
             Entities.OrderItems result = new Entities.OrderItems
             {
@@ -301,7 +300,7 @@ namespace StoreApp.DataAccess
         }
 
 
-        public static Library.Item MapInventoryItem(Entities.OrderItems dbmodel)
+        public static Library.Item MapOrderItem(Entities.OrderItems dbmodel)
         {
             Library.Item result = new Library.Item
             {

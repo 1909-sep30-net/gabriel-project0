@@ -1,6 +1,7 @@
 ﻿using StoreApp.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace StoreApp.DataAccess.Repositories
@@ -18,15 +19,10 @@ namespace StoreApp.DataAccess.Repositories
             dbcontext = context;
         }
 
-        public List<Library.Location> GetLocations()
+        public IEnumerable<Library.Location> GetLocations()
         {
-            List<Library.Location> result = new List<Library.Location>();
-
-            var entities = dbcontext.Locations;
-            foreach(var entity in entities)
-            {
-                result.Add(Mapper.MapLocation(entity));
-            }
+            //IEnumerable<Library.Location> result = new IEnumerable<Library.Location>();
+            IEnumerable<Library.Location> result = dbcontext.Locations.Select(Mapper.MapLocation).ToList();
 
             return result;
         }
@@ -39,6 +35,13 @@ namespace StoreApp.DataAccess.Repositories
         public Library.Location GetLocationByID(int id)
         {
             return Mapper.MapLocation(dbcontext.Locations.Find(id)) ?? null;
+        }
+
+        public void DisplayItems()
+        {
+            List<Entities.InventoryItems> list = dbcontext.InventoryItems.ToList();
+            //dbcontext.InventoryItems
+            Console.WriteLine(list.Select(x => x.LocationId));
         }
     }
 }

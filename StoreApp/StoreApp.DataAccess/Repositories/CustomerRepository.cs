@@ -1,4 +1,5 @@
-﻿using StoreApp.DataAccess.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using StoreApp.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,11 +25,13 @@ namespace StoreApp.DataAccess.Repositories
             dbcontext = context;
         }
 
-        public List<Library.Customer> GetCustomers()
+        public IEnumerable<Library.Customer> GetCustomers()
         {
-            var entities = dbcontext.Customers;
+            IQueryable<Entities.Customers> entities = dbcontext.Customers
+                .Include(c => c.Orders);
 
-            return Mapper.MapCustomers(entities);
+            return entities.Select(Mapper.MapCustomer).ToList();
+
         }
 
         /// <summary>
@@ -45,38 +48,29 @@ namespace StoreApp.DataAccess.Repositories
         /// Search for and return a list of customers with matching given name 
         /// </summary>
         /// <param name="name"></param>
-        /// <returns></returns>
-        public List<Library.Customer> GetCustomersByName(string name)
+        /// <returns> Returns a list of Count==0 if no customers found </returns>
+        public IEnumerable<Library.Customer> GetCustomersByName(string name)
         {
             string[] fullName = name.Split(' ');
-
             IQueryable<Customers> entities;
-            if (fullName.Length <= 0)
-            {
-                throw new ArgumentException();
-            }
-            if (fullName.Length == 1)
-            {
-                entities = dbcontext.Customers.Where(c => c.FirstName == fullName[0] || c.LastName == fullName[0]);
-            }
+
             if (fullName.Length == 2)
             {
                 entities = dbcontext.Customers.Where(c => c.FirstName == fullName[0] && c.LastName == fullName[1]);
-            } else
+            }
+            else
             {
-                throw new ArgumentException("Can only search by partial or full name", nameof(name));
+                return new List<Library.Customer>();
             }
 
-            // Create and populate list of customers
-            List<Library.Customer> resultingModelList = new List<Library.Customer>();
+            return entities.Select(Mapper.MapCustomer).ToList();
 
-            foreach (Customers item in entities)
-            {
-                resultingModelList.Add(Mapper.MapCustomer(item));
-            }
-            return resultingModelList;
         }
 
+        /// <summary>
+        /// Adds customer to database based on the given customer object model
+        /// </summary>
+        /// <param name="modelCustomer"></param>
         public void AddCustomer(Library.Customer modelCustomer)
         {
             Customers modelToEntity = Mapper.MapCustomer(modelCustomer);
@@ -92,6 +86,10 @@ namespace StoreApp.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Removes a customer with matching id from the database
+        /// </summary>
+        /// <param name="id"></param>
         public void RemoveCustomer(int id)
         {
             Customers toBeRemoved = dbcontext.Customers.Find(id);
@@ -99,6 +97,10 @@ namespace StoreApp.DataAccess.Repositories
             dbcontext.Remove(toBeRemoved);
         }
 
+        /// <summary>
+        /// Finds customer from db to be updated, then switch values with the input'd customer values
+        /// </summary>
+        /// <param name="customer"></param>
         public void UpdateCustomer(Library.Customer customer)
         {
             Customers entity = dbcontext.Customers.Find(customer.CustomerId);
