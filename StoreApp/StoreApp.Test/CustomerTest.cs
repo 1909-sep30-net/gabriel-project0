@@ -44,12 +44,21 @@ namespace StoreApp.Test
         [InlineData("Billy Bobby")]
         [InlineData("Scarlet Johanssons")]
         [InlineData("Hey Jude")]
+        [InlineData("Gibby Gid")]
         public void Name_TwoWordsSeparatedBySpace_NameStoredCorrectly(string newName)
         {
 
             customer.Name = newName;
 
             Assert.Equal(newName, customer.Name);
+        }
+
+        [Fact]
+        public void Name_UncapitalizedNames_AutoCapitalizes()
+        {
+            customer.Name = "billy jole";
+
+            Assert.Equal("Billy Jole", customer.Name);
         }
 
         [Fact]
@@ -61,7 +70,7 @@ namespace StoreApp.Test
         }
 
         [Fact]
-        public void Name_ManySpaceSeparatedValue_ThrowsException()
+        public void Name_ManySpaceSeparatedValue_ThrowsArgumentException()
         {
             string newName = "Billy Bobby Jean Bib";
 

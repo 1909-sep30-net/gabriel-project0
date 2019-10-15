@@ -26,7 +26,7 @@ namespace StoreApp.Test
             order.MyCustomer = customer;
             order.MyLocation = location;
 
-            Assert.True(order.IsValidOrder());
+            Assert.True(order.IsValid());
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace StoreApp.Test
             order.MyCustomer = customer;
             order.MyLocation = location;
 
-            Assert.False(order.IsValidOrder());
+            Assert.False(order.IsValid());
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace StoreApp.Test
             order.MyCustomer = customer;
             order.MyLocation = location;
 
-            Assert.False(order.IsValidOrder());
+            Assert.False(order.IsValid());
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace StoreApp.Test
             customer.Name = "Georgiana";
             order.MyCustomer = customer;
 
-            Assert.False(order.IsValidOrder());
+            Assert.False(order.IsValid());
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace StoreApp.Test
             location.Name = "Joe Town";
             order.MyLocation = location;
 
-            Assert.False(order.IsValidOrder());
+            Assert.False(order.IsValid());
         }
 
         /*

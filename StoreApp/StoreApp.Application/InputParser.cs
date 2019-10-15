@@ -122,7 +122,7 @@ namespace StoreApp.Application
         /// Displays a list of locations by ID and Name
         /// </summary>
         /// <param name="locations"></param>
-        public static void DisplayLocations(List<Library.Location> locations)
+        public static void DisplayLocations(IEnumerable<Library.Location> locations)
         {
             foreach (Library.Location location in locations)
             {
@@ -185,7 +185,7 @@ namespace StoreApp.Application
         /// Given a list of customers, display their information
         /// </summary>
         /// <param name="customers"></param>
-        public static void DisplayCustomers(List<Library.Customer> customers)
+        public static void DisplayCustomers(IEnumerable<Library.Customer> customers)
         {
             foreach (Library.Customer customer in customers)
             {

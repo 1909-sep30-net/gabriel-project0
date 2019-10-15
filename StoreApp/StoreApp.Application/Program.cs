@@ -56,7 +56,6 @@ namespace StoreApp.Application
 
                 // Read input from the user. Keep asking for input until input is valid.
                 string input = Console.ReadLine();
-                char output;
                 
                 while (!InputParser.IsValidActionInput((int)Menus.Main, input))
                 {
