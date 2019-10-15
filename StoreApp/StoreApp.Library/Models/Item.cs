@@ -13,7 +13,7 @@ namespace StoreApp.Library
         /// <summary>
         /// Identifies which item this is (in a list of items)
         /// </summary>
-        //public int ItemID { get; set; }
+        public int ItemID { get; set; }
 
         public Product Product
         {

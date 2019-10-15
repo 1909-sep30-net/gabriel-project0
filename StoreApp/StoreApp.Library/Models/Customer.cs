@@ -82,10 +82,12 @@ namespace StoreApp.Library
             }
         }
 
+        /*
         /// <summary>
         /// Holds the history of customer's orders
         /// </summary>
         public List<Order> OrderLog { get; set; } = new List<Order>();
+        */
 
         /// <summary>
         /// Error handling for inserting a name
@@ -113,15 +115,6 @@ namespace StoreApp.Library
             return true;
         }
 
-        /// <summary>
-        /// Returns an order from customer's orderlog, or null if not found
-        /// </summary>
-        /// <param name="ID"></param>
-        /// <returns></returns>
-        public Order GetOrder(int ID)
-        {
-            return OrderLog.Find(x => x.OrderID == ID);
-        }
     }
 
 }

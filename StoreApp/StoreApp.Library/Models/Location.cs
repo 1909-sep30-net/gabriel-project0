@@ -42,7 +42,7 @@ namespace StoreApp.Library
             }
         }
        
-
+        /*
         /// <summary>
         /// Holds the history of customer's orders
         /// </summary>
@@ -50,6 +50,7 @@ namespace StoreApp.Library
         /// Instantiate class with an empty log list
         /// </remarks>
         public List<Order> OrderLog { get; set; } = new List<Order>();
+        */
 
         /// <summary>
         /// List of items and their quantity available at this particular location

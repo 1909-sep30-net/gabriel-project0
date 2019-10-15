@@ -13,7 +13,9 @@ namespace StoreApp.Test
         Customer customer = new Customer();
         Location location = new Location();
         Product product = new Product();
+        Item item = new Item();
 
+        /*
         [Theory]
         [InlineData("George Groose","Hope")]
         [InlineData("Mestrul Maggis","Another Place")]
@@ -21,14 +23,19 @@ namespace StoreApp.Test
 
         public void IsValidOrder_ValidCustomerLocation_ReturnsTrue(string cusName, string locName)
         {
+
+            item.Product = product;
+            item.Quantity = 1;
             customer.Name = cusName;
             location.Name = locName;
+            location.Inventory.Add(item);
+            order.ProductList.Add(item);
             order.MyCustomer = customer;
             order.MyLocation = location;
 
             Assert.True(order.IsValid());
         }
-
+        */
         [Fact]
         public void IsValidOrder_InvalidCustomer_ReturnsFalse()
         {
@@ -42,7 +49,7 @@ namespace StoreApp.Test
         [Fact]
         public void IsValidOrder_InvalidLocation_ReturnsFalse()
         {
-            customer.Name = "Georgiana";
+            customer.Name = "Georgiana Crown";
             order.MyCustomer = customer;
             order.MyLocation = location;
 
@@ -53,7 +60,7 @@ namespace StoreApp.Test
         public void IsValidOrder_NullLocation_ReturnsFalse()
         {
 
-            customer.Name = "Georgiana";
+            customer.Name = "Two Pocks";
             order.MyCustomer = customer;
 
             Assert.False(order.IsValid());

@@ -25,17 +25,20 @@ namespace StoreApp.DataAccess.Repositories
             dbcontext = context;
         }
 
+        /// <summary>
+        /// Retrieves list of customers from db, converts them into business logic customers and returns the list
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Library.Customer> GetCustomers()
         {
-            IQueryable<Entities.Customers> entities = dbcontext.Customers
-                .Include(c => c.Orders);
+            IQueryable<Entities.Customers> entities = dbcontext.Customers.AsNoTracking();
 
             return entities.Select(Mapper.MapCustomer).ToList();
 
         }
 
         /// <summary>
-        /// Returns a ModelCustomer if id matches, otherwise returns null
+        /// Returns a ModelCustomer if id matches, and also grabs Customer's orders; otherwise returns null
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -43,6 +46,44 @@ namespace StoreApp.DataAccess.Repositories
         {
             return Mapper.MapCustomer(dbcontext.Customers.Find(id)) ?? null;
         }
+
+        /// <summary>
+        /// Returns a ModelCustomer if id matches, and also grabs Customer's orders; otherwise returns null
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Library.Customer GetCustomerWithOrderByID(int id)
+        {
+            var entity = dbcontext.Customers.Find(id);
+            var entityOrders = dbcontext.Orders.Where(o => o.CustomerId == entity.CustomerId).ToList();
+            entity.Orders = entityOrders;
+            return Mapper.MapCustomer(entity);
+            //var modelOrders = entityOrders.Select(Mapper.Order).To
+            //var model = Mapper.MapCustomer(entity);
+            //model.OrderLog = entityOrders;
+            return null;
+            //return Mapper.MapCustomer(dbcontext.Customers.Find(id)) ?? null;
+        }
+
+        public IEnumerable<Library.Order> GetOrdersWithProductsByCustomerID(int id)
+        {
+            var orders = dbcontext.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.OrderItem)
+                .Where(o => o.CustomerId == id);
+
+            return orders.Select(Mapper.MapOrder).ToList();
+        }
+
+        /*
+        public IEnumerable<Library.Item> GetProductsInOrderByID(int orderID)
+        {
+            var items = dbcontext.OrderItems
+                .Include(oi=>oi.Product)
+
+            return items.Select()
+        }
+        */
 
         /// <summary>
         /// Search for and return a list of customers with matching given name 

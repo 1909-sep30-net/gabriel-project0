@@ -18,23 +18,22 @@ namespace StoreApp.DataAccess
         {
             Entities.Customers result = new Entities.Customers
             {
-                //CustomerId = model.CustomerId,
+                CustomerId = model.CustomerId,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                Orders = MapOrderLog(model.OrderLog)
-
             };
 
             return result;
         }
+
         public static Library.Customer MapCustomer(Entities.Customers dbmodel)
         {
             Library.Customer result = new Library.Customer
             {
+                
                 CustomerId = dbmodel.CustomerId,
                 FirstName = dbmodel.FirstName,
                 LastName = dbmodel.LastName,
-                OrderLog = MapOrderLog(dbmodel.Orders.ToList())
             };
 
             return result;
@@ -51,7 +50,6 @@ namespace StoreApp.DataAccess
             {
                 LocationId = model.Id,
                 Name = model.Name,
-                Orders = model.OrderLog.Select(MapOrder).ToList(),
                 InventoryItems = model.Inventory.Select(i => MapInventoryItem(model,i)).ToList()
             };
 
@@ -64,21 +62,9 @@ namespace StoreApp.DataAccess
             {
                 Id = dbmodel.LocationId,
                 Name = dbmodel.Name,
-                OrderLog = dbmodel.Orders.Select(MapOrder).ToList(),
                 Inventory = dbmodel.InventoryItems.Select(MapInventoryItem).ToList()
             };
 
-            return result;
-        }
-
-        public static List<Library.Location> MapLocations(IEnumerable<Entities.Locations> entities)
-        {
-
-            List<Library.Location> result = new List<Library.Location>();
-            foreach (Entities.Locations entity in entities)
-            {
-                result.Add(MapLocation(entity));
-            }
             return result;
         }
 
@@ -91,15 +77,12 @@ namespace StoreApp.DataAccess
         {
             Entities.Orders result = new Entities.Orders
             {
-                Customer = MapCustomer(model.MyCustomer),
+                OrderId = model.OrderID,
                 CustomerId = model.MyCustomer.CustomerId,
-
-                Location = MapLocation(model.MyLocation),
                 LocationId = model.MyLocation.Id,
 
-                OrderItems = model.ProductList.Select(i => MapOrderItem(model,i)).ToList(),
                 TimeConfirmed = model.MyTime,
-                OrderId = model.OrderID
+                OrderItems = model.ProductList.Select(MapOrderItem).ToList()
             };
 
             return result;
@@ -110,8 +93,9 @@ namespace StoreApp.DataAccess
             Library.Order result = new Library.Order
             {
                 OrderID = dbmodel.OrderId,
-                MyCustomer = MapCustomer(dbmodel.Customer),
+                MyCustomer = MapCustomer(dbmodel.Customer),                
                 MyLocation = MapLocation(dbmodel.Location),
+
                 MyTime = dbmodel.TimeConfirmed,
                 ProductList = dbmodel.OrderItems.Select(MapOrderItem).ToList(),
             };
@@ -119,30 +103,6 @@ namespace StoreApp.DataAccess
             return result;
         }
 
-        /*------------------------------------------------------*/
-
-
-        /* OrderList mapping -----------------------------------*/
-
-        public static List<Library.Order> MapOrderLog( List<Entities.Orders> dbmodel)
-        {
-            List<Library.Order> result = new List<Library.Order>();
-            foreach(Entities.Orders order in dbmodel)
-            {
-                result.Add(MapOrder(order));
-            }
-            return result;
-        }
-
-        public static ICollection<Entities.Orders> MapOrderLog(List<Library.Order> model)
-        {
-            List<Entities.Orders> result = new List<Entities.Orders>();
-            foreach (Library.Order order in model)
-            {
-                result.Add(MapOrder(order));
-            }
-            return result;
-        }
 
         /*------------------------------------------------------*/
 
@@ -155,7 +115,7 @@ namespace StoreApp.DataAccess
                 ProductId = model.ID,
                 Name = model.Name,
                 Price = model.Price,
-                ColorId = model.ColorID
+                //ColorId = model.ColorID
             };
 
             return result;
@@ -168,13 +128,71 @@ namespace StoreApp.DataAccess
                 ID = dbmodel.ProductId,
                 Price = dbmodel.Price,
                 Name = dbmodel.Name,
-                ColorID = dbmodel.ColorId ?? 0
+                //ColorID = dbmodel.ColorId ?? 0
             };
 
             return result;
         }
 
         /*------------------------------------------------------*/
+
+
+
+        /* Item to InventoryItems Mapping */
+
+        public static Entities.InventoryItems MapInventoryItem(Library.Location modelL, Library.Item modelP)
+        {
+            Entities.InventoryItems result = new Entities.InventoryItems
+            {
+                Product = MapProduct(modelP.Product),
+                ProductId = modelP.Product.ID,
+                Quantity = modelP.Quantity,
+                LocationId = modelL.Id,
+                Location = MapLocation(modelL)
+            };
+
+            return result;
+        }
+        public static Library.Item MapInventoryItem(Entities.InventoryItems dbmodel)
+        {
+            Library.Item result = new Library.Item
+            {
+                Product = MapProduct(dbmodel.Product),
+                Quantity = dbmodel.Quantity
+            };
+
+            return result;
+        }
+
+        /* --------------------------------------------------------- */
+
+        /* Item to OrderItems Mapping */
+        public static Entities.OrderItems MapOrderItem(Library.Item modelI)
+        {
+            Entities.OrderItems result = new Entities.OrderItems
+            {
+                OrderItem = modelI.ItemID,
+                ProductId = modelI.Product.ID,
+                Quantity = modelI.Quantity,
+                
+            };
+
+            return result;
+        }
+
+
+        public static Library.Item MapOrderItem(Entities.OrderItems dbmodel)
+        {
+            Library.Item result = new Library.Item
+            {
+                // Should this be changed?
+                ItemID = dbmodel.OrderItem,
+                Product = MapProduct(dbmodel.Product),
+                Quantity = dbmodel.Quantity
+            };
+
+            return result;
+        }
 
         /* Color mapping */
 
@@ -200,116 +218,8 @@ namespace StoreApp.DataAccess
             return result;
         }
 
-        /* ------------------------------------------------------------ */
-
-
-        /* Inventory to InventoryItems List Mapping */
-
-        public static List<Library.Item> MapInventory(ICollection<Entities.InventoryItems> dbmodel)
-        {
-            List<Library.Item> result = new List<Library.Item>();
-            foreach(Entities.InventoryItems item in dbmodel)
-            {
-                result.Add(MapInventoryItem(item));
-            }
-            return result;
-
-        }
-
-        public static List<Entities.InventoryItems> MapInventory(Library.Location modelL)
-        {
-            List<Entities.InventoryItems> result = new List<Entities.InventoryItems>();
-            foreach (Library.Item item in modelL.Inventory)
-            {
-                result.Add(MapInventoryItem(modelL, item));
-            }
-            return result;
-        }
-
-        /* ---------------------------------------------------------------- */
-
-        /* ProductList to OrderItems List Mapping */
-
-        public static List<Library.Item> MapOrderInventory(ICollection<Entities.OrderItems> dbmodel)
-        {
-
-            List<Library.Item> result = new List<Library.Item>();
-            foreach (Entities.OrderItems item in dbmodel)
-            {
-                result.Add(MapOrderItem(item));
-            }
-
-            return result;
-
-        }
-
-        public static List<Entities.OrderItems> MapOrderInventory(Library.Order modelO)
-        {
-            List<Entities.OrderItems> result = new List<Entities.OrderItems>();
-            foreach (Library.Item item in modelO.ProductList)
-            {
-                result.Add(MapOrderItem(modelO, item));
-            }
-            return result;
-        }
-
 
         /* ------------------------------------------------------------------- */
-
-        /* Item to InventoryItems Mapping */
-
-        public static Entities.InventoryItems MapInventoryItem(Library.Location modelL, Library.Item modelP)
-        {
-            Entities.InventoryItems result = new Entities.InventoryItems
-            {
-                Product = MapProduct(modelP.Product),
-                ProductId = modelP.Product.ID,
-                Quantity = modelP.Quantity,
-                LocationId = modelL.Id,
-                Location = MapLocation(modelL),
-            };
-
-            return result;
-        }
-        public static Library.Item MapInventoryItem(Entities.InventoryItems dbmodel)
-        {
-            Library.Item result = new Library.Item
-            {
-                Product = MapProduct(dbmodel.Product),
-                Quantity = dbmodel.Quantity
-            };
-
-            return result;
-        }
-
-        /* --------------------------------------------------------- */
-
-        /* Item to OrderItems Mapping */
-        public static Entities.OrderItems MapOrderItem(Library.Order modelO, Library.Item modelI)
-        {
-            Entities.OrderItems result = new Entities.OrderItems
-            {
-                Product = MapProduct(modelI.Product),
-                ProductId = modelI.Product.ID,
-                Quantity = modelI.Quantity,
-                Order = MapOrder(modelO),
-                
-            };
-
-            return result;
-        }
-
-
-        public static Library.Item MapOrderItem(Entities.OrderItems dbmodel)
-        {
-            Library.Item result = new Library.Item
-            {
-                Product = MapProduct(dbmodel.Product),
-                Quantity = dbmodel.Quantity
-            };
-
-            return result;
-        }
 
     }
 }

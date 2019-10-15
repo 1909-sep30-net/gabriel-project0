@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StoreApp.DataAccess.Entities;
@@ -43,6 +44,7 @@ namespace StoreApp.Application
 
             CustomerRepository CustomerRepo = new CustomerRepository(context);
             LocationRepository LocationRepo = new LocationRepository(context);
+            OrderRepository OrderRepo = new OrderRepository(context);
 
             /* Start printing to console to guide user */
 
@@ -50,7 +52,7 @@ namespace StoreApp.Application
             // Going to keep this while loop condition true since that's all the application does, for now
             while (true)
             {
-                Console.WriteLine("Welcome to the Doap Soap Store application! \n");
+                Console.WriteLine("\nWelcome to the Doap Soap Store application!\n");
 
                 DisplayMainMenu();
 
@@ -80,7 +82,7 @@ namespace StoreApp.Application
                         bool orderDone = false;
 
                         // Who's the Customer?
-                        Console.WriteLine("\nSelect the customer for this order: \n");
+                        Console.WriteLine("\nSelect the customer for this order, or q to quit: \n");
 
                         // Display list of customers in the database
                         InputParser.DisplayCustomers(CustomerRepo.GetCustomers());
@@ -96,14 +98,15 @@ namespace StoreApp.Application
                         // method that takes string input, tries to parse it as int. if successful, use int to find customer. if customer not found, input again.
                         while (!int.TryParse(input, out customerID) || CustomerRepo.GetCustomerByID(customerID) == null)
                         {
-                            Console.WriteLine("Input invalid. Try again.");
-                            Console.Write("Customer ID: ");
-                            input = Console.ReadLine();
-                            if (input.ToLower() == "c")
+                            if (input.ToLower() == "q")
                             {
                                 orderDone = true;
                                 break;
                             }
+                            Console.WriteLine("Input invalid. Try again.");
+                            Console.Write("Customer ID: ");
+                            input = Console.ReadLine();
+
                         }
                         if (orderDone)
                         {
@@ -280,21 +283,32 @@ namespace StoreApp.Application
 
                     // Examine Customer
                     case "c":
-                        bool examiningCustomer = true;
-                        while (examiningCustomer)
+
+                        Console.WriteLine("All available customers:\n");
+
+                        // Retrieve a list of business logic customers
+                        var customers = CustomerRepo.GetCustomers().ToList();
+
+                        // If customers list is empty
+                        if (customers.Count < 1)
                         {
-                            Console.WriteLine("All available customers:\n");
-
+                            // Break out of ExamineCustomer action and go back to main menu
+                            Console.WriteLine("No customers to display.\n");
+                            break;
+                        }
+                        else
+                        {
                             // Display all available customers
-                            InputParser.DisplayCustomers(CustomerRepo.GetCustomers());
+                            InputParser.DisplayCustomers(customers);
 
+                            // Selected Customer ID will be parsed and stored from TryParse
+                            int custID;
+
+                            // Selected customer will be stored here
                             Customer selectCustomer = null;
 
                             // Select customer based on ID
                             Console.Write("\nSelect a customer by ID: ");
-
-                            // Selected Customer ID will be parsed and stored from TryParse
-                            int custID;
 
                             // While input or customer isn't valid, keep trying to select a valid customer
                             do
@@ -319,106 +333,209 @@ namespace StoreApp.Application
                             }
                             while (selectCustomer == null);
 
+                            Console.WriteLine("Customer info: ");
 
                             // Display all customer info: ID, Name, Orders
-                            InputParser.DisplayCustomer(selectCustomer);
 
-                            foreach(Order o in selectCustomer.OrderLog)
-                            {
-                                InputParser.DisplayOrder(o);
-                            }
+                            // Obtain orders from particular customer
+                            var customerOrders = CustomerRepo.GetOrdersWithProductsByCustomerID(selectCustomer.CustomerId).ToList();
 
-                            InputParser.DisplayOrders(selectCustomer.OrderLog);
-
-                            Console.WriteLine("\nEnter order ID to examine");
-
-                            int orderID;
-                            Order custOrder = null;
-
-                            // While input or order isn't valid, keep trying to select a valid order
-                            do
-                            {
-                                input = Console.ReadLine().ToLower();
-                                // If input is a valid int,
-                                if (input == "c")
-                                {
-                                    examiningCustomer = false;
-                                    break;
-                                }
-                                if (int.TryParse(input, out orderID))
-                                {
-                                    // Find customer with given id
-                                    custOrder = selectCustomer.OrderLog.Find(x => x.OrderID == orderID);
-                                    // If customer does not exist, print error
-                                    if (custOrder == null)
-                                    {
-                                        Console.WriteLine("Input invalid. Enter valid order ID.\n");
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Input invalid. Enter a number.\n");
-                                }
-                            }
-                            while (custOrder == null);
-
-                            InputParser.DisplayOrder(custOrder);
+                            InputParser.DisplayOrders(customerOrders);
                         }
-
                         break;
 
-                    // Examine Store Location
+                    // Examine Store Locations
                     case "s":
-                        bool examiningStore = true;
-                        while (examiningStore)
+
+                        var locations = LocationRepo.GetLocations().ToList();
+
+                        // If there are no locations, break out of case
+                        if (locations.Count < 1)
+                        {
+                            Console.WriteLine("No locations to view.\n");
+                            break;
+                        }
+                        while (true)
                         {
                             // Display all available locations
-                            InputParser.DisplayLocations(LocationRepo.GetLocations());
-
-                            Console.Write("Select Location ID: ");
-
-                            // Select desired location
-                            // Read input from the user. Keep asking for input until input is valid.
-
-                            input = Console.ReadLine();
-                            if (input.ToLower() == "c")
+                            Console.WriteLine("\nAvailable Locations:\n");
+                            for (int i = 0; i < locations.Count; i++)
                             {
-                                examiningStore = false;
+                                Console.WriteLine($"{i+1}:\t{locations[i].Name}");
+                            }
+
+                            Console.WriteLine("\nSelect Location by #: \n'C' to cancel\n");
+                            input = Console.ReadLine();
+                            if (input == "c")
+                            {
                                 break;
                             }
-                            while (!int.TryParse(input, out locationID) || LocationRepo.GetLocationByID(locationID) == null)
+                            int locationIdx;
+
+                            if (int.TryParse(input, out locationIdx)) // If input can be parsed into an int
                             {
-                                
-                                Console.WriteLine("Input invalid. Try again.");
-                                Console.WriteLine("Enter Location ID or C to cancel: ");
-                                input = Console.ReadLine();
-                                if (input.ToLower() == "c")
+                                // And the int is in the range [1-locations.Count]
+                                if (locationIdx > 0 && locationIdx <= locations.Count)
                                 {
-                                    examiningStore = false;
-                                    break;
+                                    // Grab location
+                                    Location location = locations[locationIdx-1];
+
+                                    Console.WriteLine($"Selected location:\t{location.Name}\n");
+                                    bool viewingLocation = true;
+                                    while (viewingLocation)
+                                    {
+                                        // Choose inventory or order history to view
+                                        Console.Write("View [I]nventory or [O]rder History: ");
+                                        input = Console.ReadLine();
+
+                                        // If input is i, view inventory
+                                        if (input.ToLower() == "i")
+                                        {
+
+                                        }
+                                        // If input is o, view order history
+                                        else if (input.ToLower() == "o") 
+                                        {
+                                            Console.WriteLine();
+                                            // Print location details + order history
+
+                                            // Get location orders
+                                            var locationOrders = LocationRepo.GetOrders(location.Id).ToList();
+                                            
+                                            // Choose order to view or cancel
+                                            while (true)
+                                            {
+                                                Console.WriteLine($"{location.Name}'s Order History\n");
+                                                // Print orders by index
+                                                for (int i=0;i<locationOrders.Count;i++)
+                                                {
+                                                    Console.WriteLine("-------------");
+                                                    Order currentOrder = locationOrders[i];
+
+                                                    Console.WriteLine($"Order: {i+1}\n");
+                                                    Console.WriteLine($"Customer: {locationOrders[i].MyCustomer.Name} |"
+                                                                    + $" Time Ordered:\t{locationOrders[i].MyTime}\n");
+
+                                                    var orderItems = OrderRepo.GetOrderItemsByOrderID(currentOrder.OrderID);
+
+                                                    // PRINT THE ORDER ITEMS IN THE SELECTED ORDER
+                                                    foreach (Item item in orderItems)
+                                                    {
+                                                        Console.WriteLine($"\tProduct:{item.Product.Name}\tQuantity: {item.Quantity}");
+                                                    }
+                                                    Console.WriteLine("-------------");
+                                                    
+                                                }
+
+                                                // Select order from the list to view
+                                                while (true)
+                                                {
+                                                    Console.WriteLine("Select an order to view.");
+                                                    input = Console.ReadLine();
+                                                    int orderIdx;
+                                                    // Try and parse input into int
+                                                    if (int.TryParse(input, out orderIdx))
+                                                    {
+                                                        // If input is an int and a correct index number
+                                                        if (orderIdx > 0 && orderIdx <= locationOrders.Count)
+                                                        {
+                                                            Order selectedOrder = locationOrders[orderIdx - 1]; // Decrement by 1 since user is interacting with 1-indexing list
+
+                                                            // Get list of order items from order and PRINT THEM
+                                                            var orderItems = OrderRepo.GetOrderItemsByOrderID(selectedOrder.OrderID);
+
+                                                            // PRINT THE ORDER ITEMS IN THE SELECTED ORDER
+                                                            foreach (Item item in orderItems)
+                                                            {
+                                                                Console.WriteLine($"\tProduct:{item.Product.Name}\tQuantity: {item.Quantity}");
+                                                            }
+                                                        } 
+                                                        else
+                                                        {
+                                                            Console.WriteLine("Invalid index number. Please enter a number on the list.");
+                                                        }
+                                                    }
+                                                    if (input.ToLower() == "c")
+                                                    {
+                                                        Console.WriteLine("\nGoing back...\n");
+                                                        break;
+                                                    } 
+                                                    else
+                                                    {
+                                                        // input was not int or c, so invalid input
+                                                        Console.WriteLine("Invalid input.\n\tEnter an order number to view.\n'C' to cancel.");
+                                                    }
+                                                }
+
+
+                                            }
+                                        } 
+                                        else if (input.ToLower() == "c")
+                                        {
+                                            break;
+                                        }
+                                        else // if neither, print error for invalid input
+                                        {
+                                            Console.WriteLine("Invalid input. \n\tEnter 'I' to view inventory\n\t'O' to view order history\n'C' to cancel\n");
+                                        }
+                                        
+                                    } // End of looking at specific location
+                                }
+                                else // But the input isn't within range
+                                {
+                                    Console.WriteLine("Pick a number in the list of locations.\n");
                                 }
                             }
-                            if (!examiningStore)
+                            // If input cannot be parsed into int, send msg to console and list again
+                            else
+                            {
+                                Console.WriteLine("Invalid input. Enter a number.\n");
+                            }
+                        } // End of Location listing loop
+
+
+
+
+                        // Select desired location based on index
+                        // Read input from the user. Keep asking for input until input is valid.
+                        /*
+                        input = Console.ReadLine();
+                        while(input.ToLower() != "c" )
+                        {
+
+                        }
+                        while (!int.TryParse(input, out locationID) || LocationRepo.GetLocationByID(locationID) == null)
+                        {
+                            if (input.ToLower() == "c")
                             {
                                 break;
                             }
+                            Console.WriteLine("Input invalid. Try again.");
+                            Console.WriteLine("Select Location by #: \n(or 'C' to cancel)");
+                            input = Console.ReadLine();
 
-                            Location myLocation = LocationRepo.GetLocationByID(locationID);
-
-                            Console.WriteLine();
-                            InputParser.DisplayLocation(myLocation);
-                            Console.WriteLine("\n Inventory:");
-                            InputParser.DisplayItems(myLocation.Inventory);
-                            Console.WriteLine($"inventory count: {myLocation.Inventory.Count}");
-                            Console.WriteLine("Location info displayed.");
-                            LocationRepo.DisplayItems();
-                            Console.WriteLine("now inventoryitem info displayed.");
-
-                            // Display all location info
-
-                            // Examine Order Log
-                            // Cancel
                         }
+                        if (input.ToLower() == "c")
+                        {
+                            break;
+                        }
+
+                        Location myLocation = LocationRepo.GetLocationByID(locationID);
+
+                        Console.WriteLine();
+                        InputParser.DisplayLocation(myLocation);
+                        Console.WriteLine("\n Inventory:");
+                        InputParser.DisplayItems(myLocation.Inventory);
+                        Console.WriteLine($"inventory count: {myLocation.Inventory.Count}");
+                        Console.WriteLine("Location info displayed.");
+                        LocationRepo.DisplayItems();
+                        Console.WriteLine("now inventoryitem info displayed.");
+                        */
+                        // Display all location info
+
+                        // Examine Order Log
+                        // Cancel
+                        
                         break;
                 }
             }

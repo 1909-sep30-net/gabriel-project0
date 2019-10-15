@@ -51,7 +51,7 @@ namespace StoreApp.Library
         /// </returns>
         public bool IsValid()
         {
-
+            
             // Not valid if Customer or Location have not been set to order yet
             if ( MyCustomer == null || MyLocation == null )
             {
@@ -63,6 +63,7 @@ namespace StoreApp.Library
             {
                 return false;
             }
+            
 
             // If order's list doesn't have any items in it, order is invalid
             if (ProductList.Count <= 0)

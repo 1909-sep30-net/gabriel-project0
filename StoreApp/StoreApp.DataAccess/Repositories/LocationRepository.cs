@@ -1,4 +1,5 @@
-﻿using StoreApp.DataAccess.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using StoreApp.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +22,15 @@ namespace StoreApp.DataAccess.Repositories
 
         public IEnumerable<Library.Location> GetLocations()
         {
-            //IEnumerable<Library.Location> result = new IEnumerable<Library.Location>();
-            IEnumerable<Library.Location> result = dbcontext.Locations.Select(Mapper.MapLocation).ToList();
+            return dbcontext.Locations.Select(Mapper.MapLocation).ToList();
+        }
 
-            return result;
+        public IEnumerable<Library.Order> GetOrders(int id)
+        {
+            return dbcontext.Orders.Where(o => o.LocationId == id)
+                .Include(o => o.Customer)
+                    .ThenInclude(oi=>oi.Orders)
+                .Select(Mapper.MapOrder).ToList();
         }
 
         /// <summary>
