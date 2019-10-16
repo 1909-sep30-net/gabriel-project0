@@ -4,17 +4,18 @@ using System.Text;
 
 namespace StoreApp.Library
 {
-    public class Inventory
+    public class InventoryRepository
     {
-
-
         /// <summary>
         /// Invetories are initiazlied with an empty list
         /// List items comprise of a product and a corresponding quantity
         /// </summary>
-        //private List<Item> MyList = new List<Item>();
+        private List<Library.Item> MyList = new List<Library.Item>();
 
-        public List<Item> MyList { get; set; }
+        public InventoryRepository (List<Library.Item> thatList)
+        {
+            MyList = thatList;
+        }
 
         /// <summary>
         /// Checks if given product list contains a product with given name
@@ -24,9 +25,9 @@ namespace StoreApp.Library
         /// <returns>True if contains, False if not</returns>
         public bool Contains(Product product)
         {
-            foreach (Item i in MyList)
+            foreach (Library.Item i in MyList)
             {
-                if (i.product.ID == product.ID)
+                if (i.Product.ID == product.ID)
                 {
                     return true;
                 }
@@ -40,11 +41,11 @@ namespace StoreApp.Library
         /// </summary>
         /// <param name="product"></param>
         /// <returns>Returns the list item containing the given product; Null if not found</returns>
-        public Item GetItem(Product product)
+        public Library.Item GetItem(Product product)
         {
-            foreach (Item i in MyList)
+            foreach (Library.Item i in MyList)
             {
-                if (product.ID == i.product.ID)
+                if (product.ID == i.Product.ID)
                 {
                     return i;
                 }
@@ -75,22 +76,22 @@ namespace StoreApp.Library
             }
 
             // Fetch the item with specified  product from inventory's list
-            Item listItem = GetItem(product);
+            Library.Item listItem = GetItem(product);
 
             // If inventory does not have the item, add a new item with that product and quantity
             if (listItem == null)
             {
-                listItem = new Item
+                listItem = new Library.Item
                 {
-                    product = product,
-                    quantity = quantity
+                    Product = product,
+                    Quantity = quantity
                 };
                 MyList.Add(listItem);
             }
             // If inventory already has product, increase quantity of that product
             else
             {
-                listItem.quantity += quantity;
+                listItem.Quantity += quantity;
             }
         }
 
@@ -117,7 +118,7 @@ namespace StoreApp.Library
             }
 
             // Fetch the item with specified  product from inventory's list
-            Item listItem = GetItem(product);
+            Library.Item listItem = GetItem(product);
 
             // If inventory does not have the item, add a new item with that product and quantity
             if (listItem == null)
@@ -127,7 +128,7 @@ namespace StoreApp.Library
             }
 
             // Amount of product left after decreasing
-            int quantityLeft = listItem.quantity - quantity;
+            int quantityLeft = listItem.Quantity - quantity;
 
             // If leftover quantity would be less than 0, throw exception
             if (quantityLeft < 0)
@@ -142,7 +143,7 @@ namespace StoreApp.Library
             // If leftoever quantity is some positive number, proceed with decreasing quantity
             if (quantityLeft > 0 )
             {
-                listItem.quantity -= quantity;
+                listItem.Quantity -= quantity;
             }
 
 
@@ -173,11 +174,5 @@ namespace StoreApp.Library
             }
         }
 
-        public class Item
-        {
-            public Product product { get; set; }
-            public int quantity { get; set; }
-
-        }
     }
 }

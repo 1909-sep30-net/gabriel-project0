@@ -58,8 +58,7 @@ namespace StoreApp.DataAccess.Repositories
             }
             // Return customers where first name and last name match up with the string given, ignoring case
             return dbcontext.Customers
-                .Where(c => c.FirstName.Equals(fullName[0],StringComparison.InvariantCultureIgnoreCase) 
-                        || c.LastName.Equals(fullName[1],StringComparison.InvariantCultureIgnoreCase))
+                .Where( c => c.FirstName.ToLower() == fullName[0].ToLower() && c.LastName.ToLower() == fullName[1].ToLower() )
                 .Select(Mapper.MapCustomer)
                 .ToList();
         }

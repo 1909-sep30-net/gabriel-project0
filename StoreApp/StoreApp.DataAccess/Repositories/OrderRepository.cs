@@ -21,6 +21,16 @@ namespace StoreApp.DataAccess.Repositories
             dbcontext = context;
         }
 
+        public IEnumerable<Library.Order> GetOrdersWithProductsByCustomerID(int id)
+        {
+            var orders = dbcontext.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.OrderItem)
+                .Where(o => o.CustomerId == id);
+
+            return orders.Select(Mapper.MapOrder).ToList();
+        }
+
         /// <summary>
         /// Gets all order items, including the product with them
         /// </summary>

@@ -25,12 +25,33 @@ namespace StoreApp.DataAccess.Repositories
             return dbcontext.Locations.Select(Mapper.MapLocation).ToList();
         }
 
+        /// <summary>
+        /// Get's a location's order history
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public IEnumerable<Library.Order> GetOrders(int id)
         {
-            return dbcontext.Orders.Where(o => o.LocationId == id)
+            return dbcontext.Orders
+                .Where(o => o.LocationId == id)
                 .Include(o => o.Customer)
                     .ThenInclude(oi=>oi.Orders)
-                .Select(Mapper.MapOrder).ToList();
+                .Select(Mapper.MapOrder)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Given a location id, return a list of location's inventory items (with product)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IEnumerable<Library.Item> GetInventoryItemsById(int id)
+        {
+            return dbcontext.InventoryItems
+                .Where(ii => ii.LocationId == id)
+                .Include(ii => ii.Product)
+                .Select(Mapper.MapInventoryItem)
+                .ToList();
         }
 
         /// <summary>

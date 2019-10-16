@@ -61,6 +61,18 @@ namespace StoreApp.Library
         public List<Item> Inventory { get; set; } = new List<Item>();
 
         /// <summary>
+        /// Attempt to remove a product from item inventory
+        /// </summary>
+        //public void RemoveProduct(Item item)
+        //{
+        //    Item ItemInInventory;
+        //    if (Inventory.Find(item))
+        //    {
+
+        //    }
+        //}
+
+        /// <summary>
         /// Verifies if this location instance is valid
         /// </summary>
         /// <remarks>
