@@ -27,14 +27,17 @@ namespace StoreApp.DataAccess.Repositories
             return Mapper.MapOrder(lastOrder);
         }
 
-        public IEnumerable<Library.Order> GetOrdersWithProductsByCustomerID(int id)
+        public IEnumerable<Library.Order> GetOrdersWithProductsByCustomerID(int customerId)
         {
             var orders = dbcontext.Orders
+                .Where(o => o.CustomerId == customerId)
+                .Include(o => o.Location)
                 .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.OrderItem)
-                .Where(o => o.CustomerId == id);
+                    .ThenInclude(oi => oi.Product)
+                 .Select(Mapper.MapOrder)
+                 .ToList();
 
-            return orders.Select(Mapper.MapOrder).ToList();
+            return orders;
         }
 
         /// <summary>
@@ -50,6 +53,13 @@ namespace StoreApp.DataAccess.Repositories
                 .Select(Mapper.MapOrderItem)
                 .ToList();
             return orderItems;
+
+            //return dbcontext.Orders
+            //    .Where(o => o.LocationId == id)
+            //    .Include(o => o.Customer)
+            //        .ThenInclude(oi => oi.Orders)
+            //    .Select(Mapper.MapOrder)
+            //    .ToList();
         }
 
         /// <summary>

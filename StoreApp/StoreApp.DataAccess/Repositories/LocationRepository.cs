@@ -75,9 +75,8 @@ namespace StoreApp.DataAccess.Repositories
             {
                 // find associated inventory item using item id
                 var newEntity = Mapper.MapInventoryItem(blLocation, item);
-                var oldEntity = dbcontext.InventoryItems.Where(ii => ii.LocationId == newEntity.LocationId && ii.ProductId == newEntity.ProductId).Single();
+                var oldEntity = dbcontext.InventoryItems.Where(ii => ii.LocationId == newEntity.LocationId && ii.ProductId == newEntity.ProductId).FirstOrDefault();
                 oldEntity.Quantity = newEntity.Quantity;
-                //dbcontext.Entry(oldEntity).CurrentValues.SetValues(newEntity);
             }
         }
 

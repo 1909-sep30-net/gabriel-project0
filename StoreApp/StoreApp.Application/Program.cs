@@ -115,6 +115,7 @@ namespace StoreApp.Application
                             catch (ArgumentException ex)
                             {
                                 Console.WriteLine(ex.Message);
+                                continue;
                             }
                             // If try block succeeded and customerP has a list in it, list customers
                             if (customerP.Count > 0)
@@ -448,66 +449,121 @@ namespace StoreApp.Application
 
                     // Examine Customer
                     case "c":
-
-                        Console.WriteLine("All available customers:\n");
-
-                        // Retrieve a list of business logic customers
-                        var customersC = CustomerRepo.GetCustomers().ToList();
-
-                        // If customers list is empty
-                        if (customersC.Count < 1)
+                        bool ExaminingCustomer = true;
+                        while (ExaminingCustomer)
                         {
-                            // Break out of ExamineCustomer action and go back to main menu
-                            Console.WriteLine("No customers to display.\n");
-                            break;
-                        }
-                        else
-                        {
-                            // Display all available customers
-                            //InputParser.DisplayCustomers(customers);
 
-                            // Selected Customer ID will be parsed and stored from TryParse
-                            int custID;
+                            // Select customer
 
-                            // Selected customer will be stored here
-                            Customer selectCustomer = null;
+                            // List of customers that may pop up from search
+                            List<Customer> customerC = new List<Customer>();
 
-                            // Select customer based on ID
-                            Console.Write("\nSelect a customer by ID: ");
-
-                            // While input or customer isn't valid, keep trying to select a valid customer
-                            do
+                            Console.WriteLine("\nSearch for customer by name.\n('C' to go back)\n");
+                            Console.Write("Customer Name: ");
+                            input = Console.ReadLine();
+                            if (input.ToLower() == "c")
                             {
-                                input = Console.ReadLine();
-                                // If input is a valid int,
-                                if (int.TryParse(input, out custID))
+                                break;
+                            }
+                            try
+                            {
+                                customerC = CustomerRepo.GetCustomersByString(input).ToList();
+                            }
+                            catch (ArgumentException ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                                continue;
+                            }
+                            // If count is greater than 0, there were some results
+                            if (customerC.Count > 0)
+                            {
+                                while (ExaminingCustomer)
                                 {
-                                    // Find customer with given id
-                                    selectCustomer = CustomerRepo.GetCustomerByID(custID);
-
-                                    // If customer does not exist, print error
-                                    if (selectCustomer == null)
+                                    // Display matching customers found
+                                    Console.WriteLine("\nFound customers -----------\n");
+                                    for (int i = 0; i < customerC.Count; i++)
                                     {
-                                        Console.WriteLine("Input invalid. Enter valid customer ID.\n");
+                                        Console.WriteLine($"{i + 1}:\t{customerC[i].Name}");
+                                    }
+                                    Console.WriteLine("\n\t-----------\n");
+
+                                    Console.WriteLine("Choose customer by number.\n('C' to go back)\n('Q' to quit to main menu)\n");
+                                    Console.Write("\nCustomer #: ");
+                                    input = Console.ReadLine();
+                                    int customerNum;
+                                    // Break if input C
+                                    if (input.ToLower() == "c")
+                                    {
+                                        break;
+                                    }
+                                    if (input.ToLower() == "q")
+                                    {
+                                        ExaminingCustomer = false;
+                                        break;
+                                    }
+                                    if (int.TryParse(input, out customerNum))
+                                    {
+                                        // If input is a valid number and also a number in the customer list, continue
+                                        if (customerNum > 0 && customerNum <= customerC.Count)
+                                        {
+                                            // Now we have our customer object! Now we can choose to view their orders
+                                            Customer selectedCustomer = customerC[customerNum - 1];
+
+                                            // Get location's orders
+                                            var customerOrders = OrderRepo.GetOrdersWithProductsByCustomerID(selectedCustomer.CustomerId).ToList();
+
+                                            Console.WriteLine($"{selectedCustomer.Name}'s Order History\n");
+
+                                            // Print orders by index
+                                            for (int i = 0; i < customerOrders.Count; i++)
+                                            {
+                                                Console.WriteLine("-------------");
+                                                Order currentOrder = customerOrders[i];
+
+                                                Console.WriteLine($"Order: {i + 1}\n");
+                                                Console.WriteLine($"Location: {customerOrders[i].MyLocation.Name} |"
+                                                                + $" Time Ordered:\t{customerOrders[i].MyTime}\n");
+
+                                                var orderItems = OrderRepo.GetOrderItemsByOrderID(currentOrder.OrderID);
+                                                decimal revenue = 0;
+                                                // PRINT THE ORDER ITEMS IN THE ORDER
+                                                foreach (Item item in orderItems)
+                                                {
+                                                    Console.WriteLine($"-\n\tProduct: {item.Product.Name}\n\tQuantity: {item.Quantity}\n-");
+                                                    revenue += item.Product.Price * item.Quantity;
+                                                }
+                                                Console.Write($"Total Cost: ");
+                                                Console.WriteLine("${0:N2}", revenue);
+
+                                                Console.WriteLine("-------------");
+
+                                            }
+                                            if (customerOrders.Count == 0)
+                                            {
+                                                Console.WriteLine("No orders from this customer. :(\nYet.\n");
+                                            }
+                                        } 
+                                        else
+                                        {
+                                            Console.WriteLine("Number must be within range of the list.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Invalid input. Must be number or 'C'");
                                     }
                                 }
-                                else
-                                {
-                                    Console.WriteLine("Input invalid. Enter a number.\n");
-                                }
                             }
-                            while (selectCustomer == null);
+                            else
+                            {
+                                Console.WriteLine("No customer found!");
+                            }
 
-                            Console.WriteLine("Customer info: ");
 
-                            // Display all customer info: ID, Name, Orders
-
-                            // Obtain orders from particular customer
-                            var customerOrders = OrderRepo.GetOrdersWithProductsByCustomerID(selectCustomer.CustomerId).ToList();
-
-                            InputParser.DisplayOrders(customerOrders);
-                        }
-                        break;
+                        } // End of Selecting customer loop
+                        // If "q" was used to quit the case, reset value of input so that it doesn't carry you out of the loop running the program
+                        input = "";
+                        break; // End of Examine Customer case
 
                     // Examine Store Locations
                     case "s":
