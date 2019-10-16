@@ -55,20 +55,20 @@ namespace StoreApp.Library
             // Not valid if Customer or Location have not been set to order yet
             if ( MyCustomer == null || MyLocation == null )
             {
-                return false;
+                throw new ArgumentNullException("Customer or Location is null");
             }
 
             // Not valid if Location or Customer isn't valid
             if ( !MyLocation.IsValid() || !MyCustomer.IsValid() )
             {
-                return false;
+                throw new ArgumentException("Customer or Location is invalid");
             }
             
 
             // If order's list doesn't have any items in it, order is invalid
             if (ProductList.Count <= 0)
             {
-                return false;
+                throw new Exception("Order's list cannot be empty");
             }
 
             return true;

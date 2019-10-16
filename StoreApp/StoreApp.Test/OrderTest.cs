@@ -37,6 +37,21 @@ namespace StoreApp.Test
         }
         */
         [Fact]
+        public void IsValidOrder_EverythingValid_ReturnsTrue()
+        {
+            item.Product = product;
+            item.Quantity = 1;
+            location.Name = "Moe Town";
+            location.Inventory.Add(item);
+            customer.Name = "Some body";
+            order.ProductList.Add(item);
+            order.MyCustomer = customer;
+            order.MyLocation = location;
+
+            Assert.True(order.IsValid());
+        }
+
+        [Fact]
         public void IsValidOrder_InvalidCustomer_ReturnsFalse()
         {
             location.Name = "Moe Town";

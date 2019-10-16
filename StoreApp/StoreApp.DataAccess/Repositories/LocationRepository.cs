@@ -64,6 +64,23 @@ namespace StoreApp.DataAccess.Repositories
             return Mapper.MapLocation(dbcontext.Locations.Find(id)) ?? null;
         }
 
+        /// <summary>
+        /// Given a business model inventory, update inverntory items in database
+        /// </summary>
+        /// <param name="items"></param>
+        public void UpdateInventory(IEnumerable<Library.Item> blInventory, Library.Location blLocation)
+        {
+            // populate list with mapped items
+            foreach(Library.Item item in blInventory)
+            {
+                // find associated inventory item using item id
+                var newEntity = Mapper.MapInventoryItem(blLocation, item);
+                var oldEntity = dbcontext.InventoryItems.Where(ii => ii.LocationId == newEntity.LocationId && ii.ProductId == newEntity.ProductId).Single();
+                oldEntity.Quantity = newEntity.Quantity;
+                //dbcontext.Entry(oldEntity).CurrentValues.SetValues(newEntity);
+            }
+        }
+
         public void DisplayItems()
         {
             List<Entities.InventoryItems> list = dbcontext.InventoryItems.ToList();

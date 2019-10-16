@@ -21,6 +21,12 @@ namespace StoreApp.DataAccess.Repositories
             dbcontext = context;
         }
 
+        public Library.Order GetMostRecentOrder()
+        {
+            var lastOrder = dbcontext.Orders.OrderByDescending(o=>o.OrderId).First();
+            return Mapper.MapOrder(lastOrder);
+        }
+
         public IEnumerable<Library.Order> GetOrdersWithProductsByCustomerID(int id)
         {
             var orders = dbcontext.Orders
@@ -44,6 +50,40 @@ namespace StoreApp.DataAccess.Repositories
                 .Select(Mapper.MapOrderItem)
                 .ToList();
             return orderItems;
+        }
+
+        /// <summary>
+        /// Add order to db
+        /// </summary>
+        /// <param name="order"></param>
+        public void AddOrder(Library.Order order)
+        {
+            var newEntity = Mapper.MapOrder(order);
+            newEntity.OrderId = 0; // So there's no primary key conflicts
+            dbcontext.Orders.Add(newEntity);
+        }
+
+        /// <summary>
+        /// Adds order items to the db
+        /// </summary>
+        /// <param name="orderItems">List of items in an order to be submitted to db</param>
+        public void AddOrderItems(IEnumerable<Library.Item> orderItems, Library.Order order)
+        {
+            // populate list with mapped items
+            foreach (Library.Item item in orderItems)
+            {
+                // find associated inventory item using item id
+                var newEntity = Mapper.MapOrderItem(item, order);
+                dbcontext.OrderItems.Add(newEntity);
+            }
+        }
+
+        /// <summary>
+        /// Save changes to the database!!!
+        /// </summary>
+        public void SaveChanges()
+        {
+            dbcontext.SaveChanges();
         }
 
     }

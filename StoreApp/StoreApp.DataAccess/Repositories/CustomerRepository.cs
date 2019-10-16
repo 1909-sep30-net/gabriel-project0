@@ -106,6 +106,7 @@ namespace StoreApp.DataAccess.Repositories
         {
             Customers modelToEntity = Mapper.MapCustomer(modelCustomer);
 
+            // Check if customer somehow?? already exists -- but it shouldnt
             if (dbcontext.Customers.Any(c => c.CustomerId == modelToEntity.CustomerId))
             {
                 Console.WriteLine("This customer already exists.");
@@ -113,6 +114,7 @@ namespace StoreApp.DataAccess.Repositories
             }
             else
             {
+                // Add to database
                 dbcontext.Customers.Add(modelToEntity);
             }
         }
@@ -125,7 +127,7 @@ namespace StoreApp.DataAccess.Repositories
         {
             Customers toBeRemoved = dbcontext.Customers.Find(id);
 
-            dbcontext.Remove(toBeRemoved);
+            dbcontext.Customers.Remove(toBeRemoved);
         }
 
         /// <summary>

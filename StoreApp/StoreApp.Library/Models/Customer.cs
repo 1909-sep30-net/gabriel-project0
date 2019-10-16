@@ -67,6 +67,10 @@ namespace StoreApp.Library
 
             set
             {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("String cannot be null!",nameof(value));
+                }
                 // Split up input and delimit by spaces
                 string[] firstLastNames = value.Split(' ');
 

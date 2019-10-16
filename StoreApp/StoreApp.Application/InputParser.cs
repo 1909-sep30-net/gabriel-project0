@@ -19,7 +19,6 @@ namespace StoreApp.Application
         /// </summary>
         /// <param name="optionType">The type of options being handled.</param>
         /// <param name="input"></param>
-        /// <param name="output"></param>
         /// <returns>Returns the string being checked as a char.</returns>
         public static bool IsValidActionInput(int optionType, string input)
         {
@@ -44,7 +43,7 @@ namespace StoreApp.Application
             {
                 // Options for application task
                 case 0:
-                    if (input == "p" || input == "a" || input == "c" || input == "s")
+                    if (input == "p" || input == "a" || input == "c" || input == "s" || input == "q")
                     {
                         return true;
                     }

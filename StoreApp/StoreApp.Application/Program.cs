@@ -27,6 +27,8 @@ namespace StoreApp.Application
             Console.WriteLine("C - Examine Customer");
             Console.WriteLine("S - Examine Store Location\n");
 
+            Console.WriteLine("Q - Quit\n");
+
             Console.Write("Please enter a letter to choose an action: ");
         }
 
@@ -61,7 +63,7 @@ namespace StoreApp.Application
                 
                 while (!InputParser.IsValidActionInput((int)Menus.Main, input))
                 {
-                    Console.WriteLine("\nInput was not valid. \nPlease enter one of the following: 'P', 'A', 'C', 'S'\n");
+                    Console.WriteLine("\nInput was not valid. \nPlease enter one of the following: 'P', 'A', 'C', 'S', 'Q'\n");
 
                     DisplayMainMenu();
 
@@ -201,7 +203,7 @@ namespace StoreApp.Application
                                                         // Add a product
                                                         while (PlacingOrder)
                                                         {
-                                                            bool EditingOrder = true;
+                                                            //bool EditingOrder = true;
                                                             // Display order options
                                                             Console.WriteLine("What would you like to do to your order?\n");
                                                             Console.WriteLine("1:\tAdd Products\n" +
@@ -335,15 +337,23 @@ namespace StoreApp.Application
                                                                 // Confirm order
                                                                 if (option == 2)
                                                                 {
-                                                                    // Validate the order
-                                                                    if (order.IsValid())
-                                                                    {
 
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        Console.WriteLine("There's something wrong with your order! Cannot confirm order.");
-                                                                    }
+                                                                    order.MyTime = DateTime.Now;
+                                                                    // Update associated objects / tables
+                                                                    // location inventory
+                                                                    // orders
+                                                                    // orderitems
+                                                                        
+                                                                    OrderRepo.AddOrder(order);
+                                                                    OrderRepo.SaveChanges();
+                                                                    // Add orderitems based on order coming from db
+                                                                    Order updatedOrder = OrderRepo.GetMostRecentOrder();
+                                                                    OrderRepo.AddOrderItems(order.ProductList, updatedOrder);
+                                                                    LocationRepo.UpdateInventory(locationInventory,order.MyLocation);
+                                                                    OrderRepo.SaveChanges();
+                                                                    Console.WriteLine("Order has been placed!");
+                                                                    PlacingOrder = false;
+                                                                
                                                                 }
 
                                                                 // View Current order
@@ -397,9 +407,8 @@ namespace StoreApp.Application
                             }
 
                         }
-                        
+                      
                         // END OF Place Order loop
-
                         break;
 
                     // Add a customer
@@ -430,7 +439,6 @@ namespace StoreApp.Application
                         }
 
                         // Add customer to database
-                        //customers.Add(new Customer(input));
                         CustomerRepo.AddCustomer(newCustomer);
                         CustomerRepo.SaveCustomer();
 
@@ -625,6 +633,10 @@ namespace StoreApp.Application
                         } // End of Location listing loop
                         
                         break;
+                }
+                if (input == "q")
+                {
+                    break;
                 }
             }
         }

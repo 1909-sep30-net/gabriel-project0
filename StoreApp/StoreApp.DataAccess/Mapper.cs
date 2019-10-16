@@ -77,12 +77,12 @@ namespace StoreApp.DataAccess
         {
             Entities.Orders result = new Entities.Orders
             {
-                OrderId = model.OrderID,
+                //OrderId = model.OrderID,
                 CustomerId = model.MyCustomer.CustomerId,
                 LocationId = model.MyLocation.Id,
 
                 TimeConfirmed = model.MyTime,
-                OrderItems = model.ProductList.Select(MapOrderItem).ToList()
+                OrderItems = model.ProductList.Select(i=>MapOrderItem(i,model)).ToList()
             };
 
             return result;
@@ -167,14 +167,13 @@ namespace StoreApp.DataAccess
         /* --------------------------------------------------------- */
 
         /* Item to OrderItems Mapping */
-        public static Entities.OrderItems MapOrderItem(Library.Item modelI)
+        public static Entities.OrderItems MapOrderItem(Library.Item modelI, Library.Order modelO)
         {
             Entities.OrderItems result = new Entities.OrderItems
             {
-                OrderItem = modelI.ItemID,
+                OrderId = modelO.OrderID,
                 ProductId = modelI.Product.ID,
                 Quantity = modelI.Quantity,
-                
             };
 
             return result;
@@ -186,7 +185,7 @@ namespace StoreApp.DataAccess
             Library.Item result = new Library.Item
             {
                 // Should this be changed?
-                ItemID = dbmodel.OrderItem,
+                //ItemID = dbmodel.OrderItem,
                 Product = MapProduct(dbmodel.Product),
                 Quantity = dbmodel.Quantity
             };
