@@ -34,6 +34,7 @@ namespace StoreApp.DataAccess.Repositories
                 .Include(o => o.Location)
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.Product)
+                        .ThenInclude(p => p.Color)
                  .Select(Mapper.MapOrder)
                  .ToList();
 
@@ -50,6 +51,7 @@ namespace StoreApp.DataAccess.Repositories
             var orderItems = dbcontext.OrderItems
                 .Where(oi => oi.OrderId == orderid)
                 .Include(oi => oi.Product)
+                    .ThenInclude(p=>p.Color)
                 .Select(Mapper.MapOrderItem)
                 .ToList();
             return orderItems;
@@ -79,6 +81,7 @@ namespace StoreApp.DataAccess.Repositories
         /// <param name="orderItems">List of items in an order to be submitted to db</param>
         public void AddOrderItems(IEnumerable<Library.Item> orderItems, Library.Order order)
         {
+
             // populate list with mapped items
             foreach (Library.Item item in orderItems)
             {

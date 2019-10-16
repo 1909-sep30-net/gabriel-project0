@@ -30,6 +30,8 @@ namespace StoreApp.Library
         /// </remarks>
         public int ID { get; set; }
 
+        public string ColorName { get; set; }
+
         /// <summary>
         /// Name of the soap product
         /// </summary>

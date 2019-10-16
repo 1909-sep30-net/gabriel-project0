@@ -50,7 +50,7 @@ namespace StoreApp.DataAccess
             {
                 LocationId = model.Id,
                 Name = model.Name,
-                InventoryItems = model.Inventory.Select(i => MapInventoryItem(model,i)).ToList()
+                //InventoryItems = model.Inventory.Select(i => MapInventoryItem(model,i)).ToList()
             };
 
             return result;
@@ -77,7 +77,7 @@ namespace StoreApp.DataAccess
         {
             Entities.Orders result = new Entities.Orders
             {
-                //OrderId = model.OrderID,
+                OrderId = model.OrderID,
                 CustomerId = model.MyCustomer.CustomerId,
                 LocationId = model.MyLocation.Id,
 
@@ -115,6 +115,7 @@ namespace StoreApp.DataAccess
                 ProductId = model.ID,
                 Name = model.Name,
                 Price = model.Price,
+                ColorId = model.ColorID
                 //ColorId = model.ColorID
             };
 
@@ -128,6 +129,8 @@ namespace StoreApp.DataAccess
                 ID = dbmodel.ProductId,
                 Price = dbmodel.Price,
                 Name = dbmodel.Name,
+                ColorName = dbmodel.Color.Color,
+                ColorID = dbmodel.ColorId ?? 0
                 //ColorID = dbmodel.ColorId ?? 0
             };
 
@@ -158,7 +161,8 @@ namespace StoreApp.DataAccess
             Library.Item result = new Library.Item
             {
                 Product = MapProduct(dbmodel.Product),
-                Quantity = dbmodel.Quantity
+                Quantity = dbmodel.Quantity,
+                
             };
 
             return result;

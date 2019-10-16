@@ -1,4 +1,5 @@
 ﻿using System;
+using NLog;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,10 @@ namespace StoreApp.Application
             Order,
         };
 
-        public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
+        //public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
+        private static readonly NLog.ILogger s_logger = LogManager.GetCurrentClassLogger();
+
+
         public static void DisplayMainMenu()
         {
             Console.WriteLine("What would you like to do?\n");
@@ -50,11 +54,13 @@ namespace StoreApp.Application
 
             /* Start printing to console to guide user */
 
+            Console.WriteLine("\nWelcome to the Doap Soap Store application!\n");
 
             // Going to keep this while loop condition true since that's all the application does, for now
             while (true)
             {
-                Console.WriteLine("\nWelcome to the Doap Soap Store application!\n");
+                s_logger.Info("Main Menu Accessed");
+
 
                 DisplayMainMenu();
 
@@ -76,6 +82,7 @@ namespace StoreApp.Application
                     // Place an order
                     case "p":
                         bool PlacingOrder = true;
+                        s_logger.Info("Placing order");
 
                         Console.WriteLine("\nPlace an order!");
 
@@ -100,6 +107,8 @@ namespace StoreApp.Application
                         while (PlacingOrder)
                         {
                             // Select customer
+                            s_logger.Info("Selecting customer");
+
                             Console.WriteLine("\nType in customer name to select.\n('C' to go back)\n");
                             Console.Write("Customer Name: ");
                             List<Customer> customerP = new List<Customer>();
@@ -115,6 +124,7 @@ namespace StoreApp.Application
                             catch (ArgumentException ex)
                             {
                                 Console.WriteLine(ex.Message);
+                                s_logger.Warn(ex);
                                 continue;
                             }
                             // If try block succeeded and customerP has a list in it, list customers
@@ -156,18 +166,20 @@ namespace StoreApp.Application
 
                                             var locationsP = LocationRepo.GetLocations().ToList();
 
-                                            Console.WriteLine("Choose location for this order.\n");
 
-                                            // Display all available locations
-                                            Console.WriteLine("\nAvailable Locations:\n");
-                                            for (int i = 0; i < locationsP.Count; i++)
-                                            {
-                                                Console.WriteLine($"{i + 1}:\t{locationsP[i].Name}");
-                                            }
 
                                             // Select location from the list
                                             while (PlacingOrder)
                                             {
+                                                Console.WriteLine("Choose location for this order.\n");
+
+                                                // Display all available locations
+                                                Console.WriteLine("\nAvailable Locations:\n");
+                                                for (int i = 0; i < locationsP.Count; i++)
+                                                {
+                                                    Console.WriteLine($"{i + 1}:\t{locationsP[i].Name}");
+                                                }
+
                                                 Console.WriteLine("\nSelect Location by #: \n('C' to go back)\n");
                                                 Console.Write("Selection: ");
                                                 input = Console.ReadLine();
@@ -241,10 +253,14 @@ namespace StoreApp.Application
                                                                     for (int i=0;i<locationInventory.Count;i++)
                                                                     {
                                                                         Item item = locationInventory[i];
-                                                                        Console.Write($"#{i+1}\t{item.Product.Name} | {item.Quantity} | ");
+                                                                        Console.Write($"#{i+1}\t{item.Product.Name} | {item.Product.ColorName} | {item.Quantity} | ");
                                                                         Console.WriteLine("Price: ${0:N2}", item.Product.Price);
                                                                     }
-
+                                                                    if (locationInventory.Count == 0)
+                                                                    {
+                                                                        Console.WriteLine("\nStore is all out of stock!\n");
+                                                                        continue;
+                                                                    }
                                                                     // Select Product
                                                                     while (SelectingItem)
                                                                     {
@@ -266,6 +282,8 @@ namespace StoreApp.Application
                                                                                 catch( Exception ex )
                                                                                 {
                                                                                     Console.WriteLine(ex.Message);
+                                                                                    s_logger.Info(ex);
+                                                                                    continue;
                                                                                 }
                                                                                 // Choose quantity
                                                                                 while(true)
@@ -284,6 +302,7 @@ namespace StoreApp.Application
                                                                                         catch (ArgumentException ex)
                                                                                         {
                                                                                             Console.WriteLine(ex.Message);
+                                                                                            s_logger.Warn(ex);
                                                                                             // Ask for quantity again
                                                                                             continue;
                                                                                         }
@@ -295,6 +314,7 @@ namespace StoreApp.Application
                                                                                         }
                                                                                         catch (ArgumentException ex)
                                                                                         {
+                                                                                            s_logger.Warn(ex);
                                                                                             Console.WriteLine(ex.Message);
                                                                                             // Ask for quantity again
                                                                                             continue;
@@ -304,26 +324,30 @@ namespace StoreApp.Application
                                                                                         try
                                                                                         {
                                                                                             order.Add(orderItem);
+                                                                                            
                                                                                         }
                                                                                         catch (ArgumentException ex)
                                                                                         {
+                                                                                            s_logger.Warn(ex);
                                                                                             Console.WriteLine(ex.Message);
                                                                                         }
-
+                                                                                        s_logger.Info("Item added to order");
                                                                                         SelectingItem = false;
-                                                                                        Console.WriteLine($"\n{selectedProduct.Name}, Quantity {quantityP} added to order.\n");
+                                                                                        Console.WriteLine($"\n{selectedProduct.Name}, | {selectedProduct.ColorName} Quantity: {quantityP} added to order.\n");
                                                                                         break;
                                                                                     }
                                                                                     else // Input is not even an int
                                                                                     {
                                                                                         Console.WriteLine("Please enter a number.");
+                                                                                        s_logger.Warn("Please enter a number.");
                                                                                     }
                                                                                 }
 
                                                                             } // Input is not within valid range
                                                                             else
                                                                             {
-                                                                                Console.WriteLine("Input not a valid list number.\n");
+                                                                                Console.WriteLine($"{input} not a valid list number.\n");
+                                                                                s_logger.Warn($"{input} not a valid list number.\n");
                                                                             }
 
                                                                         }
@@ -347,12 +371,16 @@ namespace StoreApp.Application
                                                                         
                                                                     OrderRepo.AddOrder(order);
                                                                     OrderRepo.SaveChanges();
+
                                                                     // Add orderitems based on order coming from db
                                                                     Order updatedOrder = OrderRepo.GetMostRecentOrder();
-                                                                    OrderRepo.AddOrderItems(order.ProductList, updatedOrder);
+
+                                                                    //OrderRepo.AddOrderItems(order.ProductList, updatedOrder);
                                                                     LocationRepo.UpdateInventory(locationInventory,order.MyLocation);
                                                                     OrderRepo.SaveChanges();
+
                                                                     Console.WriteLine("Order has been placed!");
+                                                                    s_logger.Info("Order has been placed!");
                                                                     PlacingOrder = false;
                                                                 
                                                                 }
@@ -363,7 +391,7 @@ namespace StoreApp.Application
                                                                     Console.WriteLine("Currently in order: \n");
                                                                     foreach (Item item in order.ProductList)
                                                                     {
-                                                                        Console.WriteLine($"{item.Product.Name}, {item.Quantity}");
+                                                                        Console.WriteLine($"{item.Product.Name}, {item.Product.ColorName} Quantity: {item.Quantity}");
                                                                     }
                                                                     if (order.ProductList.Count == 0)
                                                                     {
@@ -376,24 +404,28 @@ namespace StoreApp.Application
                                                             else
                                                             {
                                                                 Console.WriteLine("Invalid input. Enter a number to select from option list.");
+                                                                s_logger.Warn("Invalid input. Enter a number to select from option list.");
                                                             }
                                                         } // End of Adding To / Confirming order loop
                                                     }
                                                     else // But the input isn't within range
                                                     {
                                                         Console.WriteLine("Pick a number in the list of locations.\n");
+                                                        s_logger.Warn("Pick a number in the list of locations.\n");
                                                     }
                                                 }
                                                 // If input cannot be parsed into int, send msg to console and list again
                                                 else
                                                 {
                                                     Console.WriteLine("Invalid input. Enter a number or 'C'.\n");
+                                                    s_logger.Warn("Invalid input. Enter a number or 'C'.\n");
                                                 }
                                             } // End of selecting from list loop                                         
                                         }
                                         else // Input an int but not a valid option
                                         {
                                             Console.WriteLine("Pick a valid number from the list.\n('C' to go back)\n");
+                                            s_logger.Warn("Pick a valid number from the list. ('C' to go back)");
                                         }
                                     } 
                                     else // If input was not 'C' or a valid int, print error and try again
@@ -436,6 +468,7 @@ namespace StoreApp.Application
                             catch (ArgumentException ex)
                             {
                                 Console.WriteLine(ex.Message);
+                                s_logger.Warn(ex);
                             }
                         }
 
@@ -444,6 +477,7 @@ namespace StoreApp.Application
                         CustomerRepo.SaveCustomer();
 
                         Console.WriteLine("Customer added!");
+                        s_logger.Info($"Customer {newCustomer.Name} added");
                         
                         break;
 
@@ -472,6 +506,7 @@ namespace StoreApp.Application
                             catch (ArgumentException ex)
                             {
                                 Console.WriteLine(ex.Message);
+                                s_logger.Warn(ex);
                                 continue;
                             }
                             // If count is greater than 0, there were some results
@@ -501,6 +536,7 @@ namespace StoreApp.Application
                                         ExaminingCustomer = false;
                                         break;
                                     }
+                                    // Try parsing input as int
                                     if (int.TryParse(input, out customerNum))
                                     {
                                         // If input is a valid number and also a number in the customer list, continue
@@ -525,11 +561,14 @@ namespace StoreApp.Application
                                                                 + $" Time Ordered:\t{customerOrders[i].MyTime}\n");
 
                                                 var orderItems = OrderRepo.GetOrderItemsByOrderID(currentOrder.OrderID);
+
+                                                // sum of the product price * quantity of every item in order
                                                 decimal revenue = 0;
+
                                                 // PRINT THE ORDER ITEMS IN THE ORDER
                                                 foreach (Item item in orderItems)
                                                 {
-                                                    Console.WriteLine($"-\n\tProduct: {item.Product.Name}\n\tQuantity: {item.Quantity}\n-");
+                                                    Console.WriteLine($"-\n\tProduct: {item.Product.Name}, {item.Product.ColorName}\n\tQuantity: {item.Quantity}\n-");
                                                     revenue += item.Product.Price * item.Quantity;
                                                 }
                                                 Console.Write($"Total Cost: ");
@@ -538,6 +577,8 @@ namespace StoreApp.Application
                                                 Console.WriteLine("-------------");
 
                                             }
+                                            s_logger.Info($"{selectedCustomer.Name} order's viewed");
+
                                             if (customerOrders.Count == 0)
                                             {
                                                 Console.WriteLine("No orders from this customer. :(\nYet.\n");
@@ -612,12 +653,14 @@ namespace StoreApp.Application
                                         // If input is i, view inventory
                                         if (input.ToLower() == "i")
                                         {
+                                            s_logger.Info($"{location.Name} inventory viewed");
+
                                             var locationInventory = LocationRepo.GetInventoryItemsById(location.Id).ToList();
                                             Console.WriteLine($"{location.Name}'s Inventory");
                                             Console.WriteLine("---------------------------");
                                             foreach ( Item item in locationInventory )
                                             {
-                                                Console.Write($"{item.Product.Name} | {item.Quantity} | ");
+                                                Console.Write($"{item.Product.Name} | {item.Product.ColorName} | {item.Quantity} |");
                                                 Console.WriteLine("Price: ${0:N2}",item.Product.Price);
                                             }
                                             Console.WriteLine("---------------------------");
@@ -626,6 +669,8 @@ namespace StoreApp.Application
                                         // If input is o, view order history
                                         else if (input.ToLower() == "o") 
                                         {
+                                            s_logger.Info($"{location.Name} order history viewed");
+
                                             Console.WriteLine();
                                             // Print location details + order history
 
@@ -649,7 +694,7 @@ namespace StoreApp.Application
                                                 // PRINT THE ORDER ITEMS IN THE ORDER
                                                 foreach (Item item in orderItems)
                                                 {
-                                                    Console.WriteLine($"-\n\tProduct: {item.Product.Name}\n\tQuantity: {item.Quantity}\n-");
+                                                    Console.WriteLine($"-\n\tProduct: {item.Product.Name}, {item.Product.ColorName}\n\tQuantity: {item.Quantity}\n-");
                                                     revenue += item.Product.Price * item.Quantity;
                                                 }
                                                 Console.Write($"Total Revenue: ");

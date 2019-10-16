@@ -1,15 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using StoreApp.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+//using StoreApp.NLog;
 
 namespace StoreApp.DataAccess.Repositories
 {
     public class LocationRepository
     {
         private DoapSoapContext dbcontext;
+        //private static readonly NLog.ILogger s_logger = LogManager.GetCurrentClassLogger();
 
         public LocationRepository(DoapSoapContext context)
         {
@@ -20,13 +22,17 @@ namespace StoreApp.DataAccess.Repositories
             dbcontext = context;
         }
 
+        /// <summary>
+        /// Obtains a list of locations from the data base and returns as business logic location
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Library.Location> GetLocations()
         {
             return dbcontext.Locations.Select(Mapper.MapLocation).ToList();
         }
 
         /// <summary>
-        /// Get's a location's order history
+        /// Gets a location's order history
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -50,6 +56,7 @@ namespace StoreApp.DataAccess.Repositories
             return dbcontext.InventoryItems
                 .Where(ii => ii.LocationId == id)
                 .Include(ii => ii.Product)
+                    .ThenInclude(p => p.Color)
                 .Select(Mapper.MapInventoryItem)
                 .ToList();
         }
@@ -70,8 +77,9 @@ namespace StoreApp.DataAccess.Repositories
         /// <param name="items"></param>
         public void UpdateInventory(IEnumerable<Library.Item> blInventory, Library.Location blLocation)
         {
+            //s_logger.Info($"Updating inventory");
             // populate list with mapped items
-            foreach(Library.Item item in blInventory)
+            foreach (Library.Item item in blInventory)
             {
                 // find associated inventory item using item id
                 var newEntity = Mapper.MapInventoryItem(blLocation, item);

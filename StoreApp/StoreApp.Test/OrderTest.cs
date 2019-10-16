@@ -52,43 +52,42 @@ namespace StoreApp.Test
         }
 
         [Fact]
-        public void IsValidOrder_InvalidCustomer_ReturnsFalse()
+        public void IsValidOrder_InvalidCustomer_ThrowsArgExcep()
         {
             location.Name = "Moe Town";
             order.MyCustomer = customer;
             order.MyLocation = location;
-
-            Assert.False(order.IsValid());
+            Assert.Throws<ArgumentException>(() => order.IsValid());
         }
 
         [Fact]
-        public void IsValidOrder_InvalidLocation_ReturnsFalse()
+        public void IsValidOrder_InvalidLocation_ThrowsArgExcep()
         {
             customer.Name = "Georgiana Crown";
             order.MyCustomer = customer;
             order.MyLocation = location;
 
-            Assert.False(order.IsValid());
+            Assert.Throws<ArgumentException>(() => order.IsValid());
         }
 
         [Fact]
-        public void IsValidOrder_NullLocation_ReturnsFalse()
+        public void IsValidOrder_NullLocation_ThrowsArgNullExcep()
         {
 
             customer.Name = "Two Pocks";
             order.MyCustomer = customer;
 
-            Assert.False(order.IsValid());
+            Assert.Throws<ArgumentNullException>(() => order.IsValid());
         }
 
         [Fact]
-        public void IsValidOrder_NullCustomer_ReturnsFalse()
+        public void IsValidOrder_NullCustomer_ThrowsArgNullExcep()
         {
 
             location.Name = "Joe Town";
             order.MyLocation = location;
 
-            Assert.False(order.IsValid());
+            Assert.Throws<ArgumentNullException>(() => order.IsValid());
         }
 
         /*
