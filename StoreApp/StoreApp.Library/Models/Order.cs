@@ -87,5 +87,62 @@ namespace StoreApp.Library
             }
             return sum;
         }
+
+        /// <summary>
+        /// Returns a list item in the order inventory matching with given product
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns>Returns the list item containing the given product; Null if not found</returns>
+        public Library.Item GetItem(Product product)
+        {
+            foreach (Library.Item i in ProductList)
+            {
+                if (product.ID == i.Product.ID)
+                {
+                    return i;
+                }
+            }
+
+            // Returns null if product was not found in list
+            return null;
+        }
+
+        /// <summary>
+        /// Adds an item to order's product list, increasing quantity if it already exists
+        /// </summary>
+        /// <param name="item"></param>
+        public void Add(Item item)
+        {
+            // Validate quantity
+            if (item.Quantity < 1)
+            {
+                throw new ArgumentException("Quantity added should be 1 or more.", nameof(item.Quantity));
+            }
+
+            // Cannot add a null product
+            if (item.Product == null)
+            {
+                throw new ArgumentNullException("Product cannot be null.", nameof(item.Product));
+            }
+
+            // Fetch the item with specified  product from inventory's list
+            Library.Item listItem = GetItem(item.Product);
+
+            // If inventory does not have the item, add a new item with that product and quantity
+            if (listItem == null)
+            {
+                listItem = new Library.Item
+                {
+                    Product = item.Product,
+                    Quantity = item.Quantity
+                };
+                ProductList.Add(listItem);
+            }
+            // If inventory already has product, increase quantity of that product
+            else
+            {
+                listItem.Quantity += item.Quantity;
+            }
+        }
     }
 }

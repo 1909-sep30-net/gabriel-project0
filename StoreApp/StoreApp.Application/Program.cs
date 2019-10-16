@@ -162,7 +162,7 @@ namespace StoreApp.Application
                                                 Console.WriteLine($"{i + 1}:\t{locationsP[i].Name}");
                                             }
 
-                                            // Select from the list
+                                            // Select location from the list
                                             while (PlacingOrder)
                                             {
                                                 Console.WriteLine("\nSelect Location by #: \n('C' to go back)\n");
@@ -186,6 +186,9 @@ namespace StoreApp.Application
                                                         // Put into current order
                                                         order.MyLocation = location;
                                                         Console.WriteLine($"\nOrder will be for Location: {location.Name}!\n");
+
+                                                        // Clears the order's cart
+                                                        order.ProductList.Clear();
 
                                                         // Load location necessities
 
@@ -246,6 +249,7 @@ namespace StoreApp.Application
                                                                         input = Console.ReadLine();
                                                                         
                                                                         int productIdx;
+                                                                        // Try getting an int input to select product #
                                                                         if (int.TryParse(input,out productIdx))
                                                                         {
                                                                             // Input is within valid range
@@ -269,17 +273,42 @@ namespace StoreApp.Application
                                                                                     // Input is a valid int
                                                                                     if (int.TryParse(input, out quantityP))
                                                                                     {
+                                                                                        // Validate setting the quantity
                                                                                         try
                                                                                         {
-                                                                                            invenRepo.Remove(selectedProduct,quantityP);
+                                                                                            orderItem.Quantity = quantityP;
+                                                                                        }
+                                                                                        catch (ArgumentException ex)
+                                                                                        {
+                                                                                            Console.WriteLine(ex.Message);
+                                                                                            // Ask for quantity again
+                                                                                            continue;
+                                                                                        }
+
+                                                                                        // Validate removing from the inventory
+                                                                                        try
+                                                                                        {
+                                                                                            invenRepo.Remove(selectedProduct, quantityP);
+                                                                                        }
+                                                                                        catch (ArgumentException ex)
+                                                                                        {
+                                                                                            Console.WriteLine(ex.Message);
+                                                                                            // Ask for quantity again
+                                                                                            continue;
+                                                                                        }
+                                                                                        
+                                                                                        // Validate adding the item to the order
+                                                                                        try
+                                                                                        {
+                                                                                            order.Add(orderItem);
                                                                                         }
                                                                                         catch (ArgumentException ex)
                                                                                         {
                                                                                             Console.WriteLine(ex.Message);
                                                                                         }
-                                                                                        order.ProductList.Add(new Item { Product = selectedProduct, Quantity = quantityP});
+
                                                                                         SelectingItem = false;
-                                                                                        Console.WriteLine($"{selectedProduct.Name}, Quantity {quantityP} added to order.");
+                                                                                        Console.WriteLine($"\n{selectedProduct.Name}, Quantity {quantityP} added to order.\n");
                                                                                         break;
                                                                                     }
                                                                                     else // Input is not even an int
@@ -299,13 +328,22 @@ namespace StoreApp.Application
                                                                         {
                                                                             Console.WriteLine("Pick a product # from list to choose.");
                                                                         }
-                                                                    }
+                                                                    } // End of Selecting Product Loop
 
                                                                 } // Done Adding to order
+
                                                                 // Confirm order
                                                                 if (option == 2)
                                                                 {
+                                                                    // Validate the order
+                                                                    if (order.IsValid())
+                                                                    {
 
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        Console.WriteLine("There's something wrong with your order! Cannot confirm order.");
+                                                                    }
                                                                 }
 
                                                                 // View Current order
@@ -315,6 +353,10 @@ namespace StoreApp.Application
                                                                     foreach (Item item in order.ProductList)
                                                                     {
                                                                         Console.WriteLine($"{item.Product.Name}, {item.Quantity}");
+                                                                    }
+                                                                    if (order.ProductList.Count == 0)
+                                                                    {
+                                                                        Console.WriteLine("Order currently empty. :(\n Add products to your order!\n");
                                                                     }
                                                                     Console.WriteLine("\n---------------\n");
                                                                 }
