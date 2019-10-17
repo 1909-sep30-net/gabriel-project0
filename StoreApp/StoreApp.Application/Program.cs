@@ -254,7 +254,8 @@ namespace StoreApp.Application
                                                                     {
                                                                         Item item = locationInventory[i];
                                                                         Console.Write($"#{i+1}\t{item.Product.Name} | {item.Product.ColorName} | {item.Quantity} | ");
-                                                                        Console.WriteLine("Price: ${0:N2}", item.Product.Price);
+                                                                        Console.Write("Price: ${0:N2}", item.Product.Price);
+                                                                        Console.WriteLine($"{item.Product.Name}");
                                                                     }
                                                                     if (locationInventory.Count == 0)
                                                                     {
